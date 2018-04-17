@@ -1,0 +1,89 @@
+{% extends 'htmls/base.html' %}
+{% block nav %}
+<nav class="navbar navbar-default top-navbar" role="navigation">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html"><strong><!--<i class="icon fa fa-plane"></i>-->信息查询</strong></a>
+
+        <div id="sideNav" href="">
+            <i class="fa fa-bars icon"></i>
+        </div>
+    </div>
+</nav>
+<nav class="navbar-default navbar-side" role="navigation">
+    <div class="sidebar-collapse">
+        <ul class="nav" id="main-menu">
+            <li>
+                <a class="{{ dashboard }}" href="index.html"><i class="fa fa-dashboard"></i> 数据统计</a>
+            </li>
+            <li>
+                <a class="{{ search }}" href="#"><i class="fa fa-search"></i> 查询入口</a>
+            </li>
+
+            <li>
+                <a href="#" class="{{ sitemap }}"><i class="fa fa-sitemap"></i> 信息总览<span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level {{ sitemap_ul }}">
+                    <li>
+                        {% if u == '1' %}
+                            <a href="table?u=1" style="color: #F36A5A;">教师</a>
+                            {% else %}
+                            <a href="table?u=1">教师</a>
+                        {% endif %}
+                    </li>
+                    <li>
+                        {% if u == '2' %}
+                            <a href="table?u=2" style="color: #F36A5A;">学生</a>
+                            {% else %}
+                            <a href="table?u=2">学生</a>
+                        {% endif %}
+                    </li>
+                    <li>
+                        {% if u == '3' %}
+                            <a href="table?u=3" style="color: #F36A5A;">教室</a>{#background: #373d41#}
+                            {% else %}
+                            <a href="table?u=3">教室</a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </li>
+{#            <li>#}
+{#                <a href=""><i class="fa fa-table"></i> 表格</a>#}
+{#            </li>#}
+        </ul>
+    </div>
+</nav>
+{% endblock %}
+
+{% block wrapper %}
+    <div id="page-wrapper">
+        <!-- 路径导航 -->
+        <div class="header">
+            <h1 class="page-header">
+            <!--总揽 <small>Welcome </small>-->
+            </h1>
+            <ol class="breadcrumb">
+                {% if path %}
+                    {% for i, j in path %}
+                          <li><a href="{{ i }}?u=1">{{ j }}</a></li>
+                    {% endfor %}
+                {% endif %}
+                {% if u %}
+                    {% if u == '1' %}
+                    <li class="active">教师</li>
+                    {% elif u == '2' %}
+                    <li class="active">学生</li>
+                    {% elif u == '3' %}
+                    <li class="active">教室</li>
+                {% endif %}
+
+                {% endif %}
+            </ol>
+        </div>
+        {% block content %}{% endblock %}
+    </div>
+{% endblock %}

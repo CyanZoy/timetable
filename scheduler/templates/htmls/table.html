@@ -1,0 +1,111 @@
+{% extends 'htmls/nav.html' %}
+
+{% block content %}
+<div id="page-inner">
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Advanced Tables -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                     本周教师课程安排
+                </div>
+                <div class="panel-body">
+                    <div class="table-responsive" style="">
+                        <div id="dataTables-example_wrapper" class="dataTables_wrapper form-inline" role="grid">
+                            <div class="row"><div class="col-sm-6">
+                                <div class="dataTables_length" id="dataTables-example_length">
+                                    <label>
+                                        <select name="dataTables-example_length" aria-controls="dataTables-example" class="form-control input-sm">
+                                            <option value="10">10</option>
+                                            <option value="25">25</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select> 每页显示(未实现)</label>
+                                </div>
+                            </div><div class="col-sm-6">
+                            <div id="dataTables-example_filter" class="dataTables_filter">
+                                <label>搜索:(未实现)<input type="search" class="form-control input-sm" aria-controls="dataTables-example"></label></div></div></div>
+                            <table class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th>星期几</th>
+                                        <th>教师工号</th>
+                                        <th>教室-门号</th>
+                                        <th>开课时间</th>
+                                        <th>上课时长</th>
+                                        <th>课程名</th>
+                                        <th>起始周 - 结束周</th>
+                                    </tr>
+                                </thead>
+                                <tbody style="text-align: center">
+                                    {% if contacts.result %}
+                                        {% for i in contacts.result %}
+                                            <tr class="{% cycle 'odd' 'even' %}">
+                                                <td title="星期几">{{ i.XQJ }}</td>
+                                                <td>{{ i.JSZGH }}</td>
+                                                <td>{{ i.JSBH }}-{{ i.JSMC }}</td>
+                                                <td title="开课时间">第{{ i.SJD }}节开始</td>
+                                                <td title="课程长度">共{{ i.SKCD }}节课</td>
+                                                <td>{{ i.KCZWMC }}</td>
+                                                <td>{{ i.QSZ }}-{{ i.JSZ }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--End Advanced Tables -->
+        </div>
+    </div>
+        <!-- /. ROW  -->
+    <p class="pagination" id="J_Pagination">
+        {% if contacts.has_previous %}
+            <a class="prev" href="javascript:void(0)" data-page="{{ contacts.has_previous }}"><span>&lt;上一页</span></a>
+        {% endif %}
+{#      左边页数显示#}
+        {% for i in left_page %}
+            {% ifnotequal i current_page %}
+                <a class="item" data-page="{{ i }}" href="javascript:void(0)">{{ i }}</a>
+            {% else %}
+                <a class="current" data-page="{{ i }}" href="javascript:void(0)">{{ i }}</a>
+            {% endifnotequal %}
+        {% endfor %}
+        <span class="more">...</span>
+{#      中间页数显示#}
+        {% if mid_page %}
+            {% for i in mid_page %}
+                {% ifnotequal i current_page %}
+                    <a class="item" data-page="{{ i }}" href="javascript:void(0)">{{ i }}</a>
+                {% else %}
+                    <a class="current" data-page="{{ i }}" href="javascript:void(0)">{{ i }}</a>
+                {% endifnotequal %}
+            {% endfor %}
+            <span class="more">...</span>
+        {% endif %}
+{#      右边页数显示#}
+        {% for i in right_page %}
+            {% ifnotequal i current_page %}
+                <a class="item" data-page="{{ i }}" href="javascript:void(0)">{{ i }}</a>
+            {% else %}
+                <a class="current" data-page="{{ i }}" href="javascript:void(0)">{{ i }}</a>
+            {% endifnotequal %}
+        {% endfor %}
+        {% if contacts.has_next %}
+            <a class="next" href="javascript:void(0)" data-page="{{ contacts.has_next }}">下一页&gt;</a>
+        {% endif %}
+    </p>
+</div>
+
+{% endblock %}
+
+{% block custom_script %}
+    <script>
+        $('.pagination a').click(function(){
+            let data_page = $(this).attr('data-page');
+            window.location.href = '/table?u={{ u }}&page='+data_page+''
+        })
+    </script>
+{% endblock %}

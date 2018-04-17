@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+# 在页首加入
+{% load pagination_tags %}
+
+# 放在展示分页列表的上面
+{% autopaginate object_list %}
+# or 默认一页20条，可以加参数 自定义
+{% autopaginate object_list 10 %}
+
+# 放在展示分页列表的下面
+{% paginate %}
+</body>
+</html>
