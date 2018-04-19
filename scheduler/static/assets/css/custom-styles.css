@@ -21,9 +21,10 @@ body {
 #page-inner {
     width:100%;
     margin:10px 20px 10px 0px;
-    background-color:transparent;
+    /*background-color:transparent;*/
+    background-color:rgb(237, 237, 237);
     padding: 15px 30px;
-    min-height:1200px;
+    /*min-height:1200px;*/
 }
 @media only screen and (max-width: 770px) {
     #page-inner{
@@ -637,7 +638,7 @@ line-height: 1.428571429;
      #page-wrapper{
                margin: 0 0 0 260px;
                padding: 0;
-               min-height: 1200px;
+               /*min-height: 1200px;*/
     }
 	
 	
@@ -713,4 +714,22 @@ font-size: 19px;
 }
 .more{
     color:#ff6458;
+}
+.table>tbody>tr.snow>td, .table>tbody>tr.snow>th, .table>tbody>tr>td.snow, .table>tbody>tr>th.snow, .table>tfoot>tr.snow>td, .table>tfoot>tr.snow>th, .table>tfoot>tr>td.snow, .table>tfoot>tr>th.snow, .table>thead>tr.snow>td, .table>thead>tr.snow>th, .table>thead>tr>td.snow, .table>thead>tr>th.snow {
+    background-color: #EEE9E9;
+}
+.table>tbody>tr.Bisque>td, .table>tbody>tr.Bisque>th, .table>tbody>tr>td.Bisque, .table>tbody>tr>th.Bisque, .table>tfoot>tr.Bisque>td, .table>tfoot>tr.Bisque>th, .table>tfoot>tr>td.Bisque, .table>tfoot>tr>th.Bisque, .table>thead>tr.Bisque>td, .table>thead>tr.Bisque>th, .table>thead>tr>td.Bisque, .table>thead>tr>th.Bisque {
+    background-color: #FFE4C4;
+    border:1px solid #9d9d9d;
+    /*border-top:1px solid #B5B5B5;*/
+}
+td{
+    /*height: 55px;*/
+    max-width: 50px;
+}
+.info, .danger, .warning, .snow{
+    border:1px solid #B5B5B5;
+}
+.table-responsive{
+    overflow-x: visible;
 }
