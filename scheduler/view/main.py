@@ -25,31 +25,36 @@ class ChangeList:
         list_per_page:每页的数据数量
         page:数据库交互
     """
-    def __init__(self, model, list_per_page, **kwargs):
+    def __init__(self, model, list_per_page, *args, **kwargs):
         self.model = model
         self.list_per_page = list_per_page
         self.count = self.model.objects.all().count()
-        # self.count_kczwm_isnull = 0
+        self.args = args
+        self.kwargs = kwargs
         self.key_isnull = self.model.objects.filter(**kwargs).count()
 
     def get_results(self):
         result = self.model.objects.all()[:self.list_per_page]
         return result
 
-    def get_results_by_page(self, page, **kwargs):
+    def get_results_by_page(self, page, *args, **kwargs):
         """查询指定页数内的数据,kwargs为过滤参数"""
         self.page = page
         try:
-            result = self.model.objects.filter(**kwargs)[(page-1)*self.list_per_page
-                                                         :(page-1)*self.list_per_page+self.list_per_page]
+            result = self.model.objects.filter(*args, **kwargs)[(page-1)*self.list_per_page:
+                                                (page-1)*self.list_per_page+self.list_per_page]
             return result
         except DatabaseError as e:
             print(e, '->', 'ChangList.get_results_by_page')
 
+    def get_result_by_range(self, *args):
+        result = self.model.objects.filter(**self.kwargs).order_by(*args)[:self.list_per_page].values()
+        return result
+
 
 class Pagina:
     """分页"""
-    def __init__(self, model, page, list_per_page, **kwargs):
+    def __init__(self, model, page, list_per_page, *args, **kwargs):
         self.model = model
         self.page = page
         self.has_previous = False
@@ -59,12 +64,12 @@ class Pagina:
         self.mid_page = []
         self.right_page = []
         self.list_per_page = list_per_page
-        self.result = self.get_result(self.page, **kwargs)
+        self.result = self.get_result(self.page, *args, **kwargs)
 
-    def get_result(self, page, **kwargs):
+    def get_result(self, page, *args, **kwargs):
         """根据指定页数"""
         try:
-            self.s = ChangeList(self.model, list_per_page=self.list_per_page, **kwargs)
+            self.s = ChangeList(self.model, self.list_per_page, *args, **kwargs)
         except:
             pass
 
