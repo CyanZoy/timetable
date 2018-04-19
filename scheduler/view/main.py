@@ -102,4 +102,4 @@ class Pagina:
             elif page - 2 not in self.left_page:
                 self.mid_page.append(page - 2)
 
-        return self.s.get_results_by_page(page, **kwargs)
+        return self.s.get_results_by_page(page, *args, **kwargs)
