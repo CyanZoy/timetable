@@ -13,4 +13,4 @@ DSJ_TS_DZJG_DGZT_COLOR = {'0': 'black', '1': 'blue', '2': 'red', '3': 'yellow'}
 
 
 # 前端
-URL_TO_NAME = {'index': '首页', 'index.html': '首页', 'table': '信息查询', }
+URL_TO_NAME = {'index': '首页', 'index.html': '首页', 'table': '信息总览', 'specific': '查询', 'specific.html': '查询'}
