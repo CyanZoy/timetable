@@ -61,13 +61,14 @@ def table(request):
 
     pag = None
     if sousuo:
+        if u == '1':
+            from django.db.models import Q
+            pag = Pagina(Js, page, example_length, (Q(KCZWMC__contains=sousuo) | Q(JSZGH__contains=sousuo)),KCZWMC__isnull=False)
         if u=='2':
             from django.db.models import Q
             pag = Pagina(Xs, page, example_length, (Q(KCB__contains=sousuo) | Q(XH__contains=sousuo)), KCB__isnull=False)
-        if u=='1':
-            from django.db.models import Q
-            pag = Pagina(Js, page, example_length, (Q(KCZWMC__contains=sousuo) | Q(JSZGH__contains=sousuo)),
-                         KCZWMC__isnull=False)
+
+
     if not sousuo:
         if u == '1':
                 pag = Pagina(Js, page, example_length, KCZWMC__isnull=False)
