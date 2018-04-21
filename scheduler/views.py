@@ -1,3 +1,4 @@
+# utf-8
 from django.shortcuts import (
     render, HttpResponse
 )
@@ -38,19 +39,49 @@ def table(request):
     u = request.GET.get('u')
     # 获取传入页数
     page = request.GET.get('page')
+    sousuo = request.GET.get('s')
+    if not sousuo:
+        sousuo=''
+    example_length=request.GET.get('dataTables-example_length')
+
+    if not example_length:
+        example_length=15
+    example_length=int(example_length)
+
     if not page:
         page = 1
     page = int(page)
+
     path_split = divice_request_path(request, defaut_div='/')
     p = {'index': '首页'}
     for _ in path_split:
         if len(_):
             p[_] = URL_TO_NAME[_]
 
-    pag = Pagina(Js, page, 15, KCZWMC__isnull=False)
+
+    pag = None
+    if sousuo:
+        if u == '1':
+            from django.db.models import Q
+            pag = Pagina(Js, page, example_length, (Q(KCZWMC__contains=sousuo) | Q(JSZGH__contains=sousuo)),KCZWMC__isnull=False)
+        if u=='2':
+            from django.db.models import Q
+            pag = Pagina(Xs, page, example_length, (Q(KCB__contains=sousuo) | Q(XH__contains=sousuo)), KCB__isnull=False)
+
+
+    if not sousuo:
+        if u == '1':
+                pag = Pagina(Js, page, example_length, KCZWMC__isnull=False)
+        elif u == '2':
+                pag = Pagina(Xs, page, example_length, KCB__isnull=False)
+        else:
+                pag = Pagina(Js, page, example_length, KCZWMC__isnull=False)
+
+
 
     left_page = sorted(pag.left_page)
     right_page = sorted(pag.right_page)
+
 
     contenxt = {
         'u': u,
@@ -60,6 +91,10 @@ def table(request):
         'current_page': page,
         'mid_page': sorted(pag.mid_page),
         'right_page': right_page,
+        'sousuo':sousuo,
+        'example_length':example_length
+
+
     }
 
     contenxt.update(extra_context)

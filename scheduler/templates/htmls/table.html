@@ -6,35 +6,56 @@
         <div class="col-md-12">
             <!-- Advanced Tables -->
             <div class="panel panel-default">
-                <!--{% if u == '1' %}-->
+
                     <div class="panel-heading">
-                       {% if u == '1' %}    本周教师课程安排   {% endif %}
-                        {% if u == '2' %}    本周学生课程安排   {% endif %}
+                      {% if u == '1' %}   本周教师课程安排 {% endif %}
+                       {% if u == '1' %}   本周学生课程安排 {% endif %}
+
                     </div>
-
-
                     <div class="panel-body">
                         <div class="table-responsive" style="">
-                            <div id="dataTables-example_wrapper" class="dataTables_wrapper form-inline" role="grid">
-                                <div class="row"><div class="col-sm-6">
-                                    <div class="dataTables_length" id="dataTables-example_length">
+                            <div id="dataTables-example_wrapper_xs" class="dataTables_wrapper form-inline" role="grid">
+
+                                <div class="row">
+                                    <form method="GET" href='table' id="souform">
+                                    {% if u == '1' %}   <input name="u" value="1" style="display: none"/> {% endif %}
+                                    {% if u == '2' %}   <input name="u" value="2" style="display: none"/> {% endif %}
+                                          <!--{% csrf_token %}-->
+                                    <div class="col-sm-6">
+                                    <div class="dataTables_length" id="dataTables-example_length_xs">
+
                                         <label>
-                                            <select name="dataTables-example_length" aria-controls="dataTables-example" class="form-control input-sm">
-                                                <option value="10">10</option>
+                                              每页显示:
+                                            <select name="dataTables-example_length" aria-controls="dataTables-example" class="form-control input-sm" value="{{ example_length }}">
+
+                                                <option value="10"  selected="selected">10</option>
                                                 <option value="25">25</option>
                                                 <option value="50">50</option>
                                                 <option value="100">100</option>
-                                            </select> 每页显示(未实现)</label>
+                                            </select> </label>
+                                          <input type="submit" value="确定"  ></input>
+
+
                                     </div>
                                 </div><div class="col-sm-6">
-                                <div id="dataTables-example_filter" class="dataTables_filter">
-                                    <label>搜索:(未实现)<input type="search" class="form-control input-sm" aria-controls="dataTables-example"></label></div></div></div>
-                                <table class="table table-striped table-bordered table-hover" id="dataTables-example">
-                                       {% if u == '1' %}
+                                <div id="dataTables-example_filter_xs" class="dataTables_filter">
+
+
+                                        <label>搜索:
+                                        <input type="search" class="form-control input-sm" aria-controls="dataTables-example" name="s" value="{{ sousuo }}">
+                                    </label>
+                                        <input type="submit" value="搜索" ></input>
+
+                                </div></div>
+                                 </form>
+                                </div>
+                                <table class="table table-striped table-bordered table-hover" id="dataTables-example_xs">
+
                                          <thead>
                                             <tr>
                                                 <th>星期几</th>
-                                                <th>教师工号</th>
+                                            {% if u == '1' %}    <th>教师工号</th>  {% endif %}
+                                             {% if u == '2' %}   <th>学号</th>   {% endif %}
                                                 <th>教室-门号</th>
                                                 <th>开课时间</th>
                                                 <th>上课时长</th>
@@ -49,133 +70,34 @@
 
                                                     <tr class="{% cycle 'odd' 'even' %}">
                                                         <td title="星期几">{{ i.XQJ }}</td>
+                                                        {% if u == '1' %}
                                                         <td>{{ i.JSZGH }}</td>
                                                         <td>{{ i.JSBH }}-{{ i.JSMC }}</td>
                                                         <td title="开课时间">第{{ i.SJD }}节开始</td>
                                                         <td title="课程长度">共{{ i.SKCD }}节课</td>
                                                         <td>{{ i.KCZWMC }}</td>
                                                         <td>{{ i.QSZ }}-{{ i.JSZ }}</td>
-                                                    </tr>
-
-                                                {% endfor %}
-                                           {% endif %}
-
-                                        </tbody>
-                                   {% endif %}
-                                    {% if u == '2' %}
-                                         <thead>
-                                            <tr>
-                                                <th>星期几</th>
-                                                <th>学号</th>
-                                                <th>教室-门号</th>
-                                                <th>开课时间</th>
-                                                <th>上课时长</th>
-                                                <th>课程名</th>
-                                                <th>起始周 - 结束周</th>
-                                            </tr>
-                                         </thead>
-                                        <tbody style="text-align: center">
-
-                                            {% if contacts.result %}
-                                                {% for i in contacts.result %}
-
-                                                    <tr class="{% cycle 'odd' 'even' %}">
-                                                        <td title="星期几">{{ i.XQJ }}</td>
+                                                        {% endif %}
+                                                        {% if u == '2' %}
                                                         <td>{{ i.XH }}</td>
                                                         <td>{{ i.jsmh }}</td>
                                                         <td title="开课时间">第{{ i.DJJ }}节开始</td>
                                                         <td title="课程长度">共{{ i.SKCD }}节课</td>
                                                         <td>{{ i.kcm}}</td>
                                                         <td>{{ i.QSZ }}-{{ i.JSZ }}</td>
+                                                        {% endif %}
                                                     </tr>
 
                                                 {% endfor %}
                                            {% endif %}
 
                                         </tbody>
-                                    {% endif %}
+
                                 </table>
                             </div>
                         </div>
                     </div>
 
-               <!--{% endif %}-->
-                <!--{% if u == '2' %}-->
-                        <!--<div class="panel-heading">-->
-                         <!--本周学生课程安排-->
-                    <!--</div>-->
-
-
-                    <!--<div class="panel-body">-->
-                        <!--<div class="table-responsive" style="">-->
-                            <!--<div id="dataTables-example_wrapper_xs" class="dataTables_wrapper form-inline" role="grid">-->
-
-                                <!--<div class="row">-->
-                                    <!--<form method="POST" action="table?u=2">-->
-                                          <!--{% csrf_token %}-->
-                                    <!--<div class="col-sm-6">-->
-                                    <!--<div class="dataTables_length" id="dataTables-example_length_xs">-->
-
-                                        <!--<label>-->
-                                            <!--<select name="dataTables-example_length" aria-controls="dataTables-example" class="form-control input-sm" >-->
-                                                <!--<option value="10">10</option>-->
-                                                <!--<option value="25">25</option>-->
-                                                <!--<option value="50">50</option>-->
-                                                <!--<option value="100">100</option>-->
-                                            <!--</select> 每页显示(未实现)</label>-->
-                                           <!--<input type="submit" value="确定"></input>-->
-
-                                    <!--</div>-->
-                                <!--</div><div class="col-sm-6">-->
-                                <!--<div id="dataTables-example_filter_xs" class="dataTables_filter">-->
-
-
-                                        <!--<label>搜索:(未实现)-->
-                                        <!--<input type="search" class="form-control input-sm" aria-controls="dataTables-example" name="s" onclick="Search()">-->
-                                    <!--</label>-->
-                                     <!--<input type="submit" value="搜索"></input>-->
-
-                                <!--</div></div>-->
-                                 <!--</form>-->
-                                <!--</div>-->
-                                <!--<table class="table table-striped table-bordered table-hover" id="dataTables-example_xs">-->
-
-                                         <!--<thead>-->
-                                            <!--<tr>-->
-                                                <!--<th>星期几</th>-->
-                                                <!--<th>学号</th>-->
-                                                <!--<th>教室-门号</th>-->
-                                                <!--<th>开课时间</th>-->
-                                                <!--<th>上课时长</th>-->
-                                                <!--<th>课程名</th>-->
-                                                <!--<th>起始周 - 结束周</th>-->
-                                            <!--</tr>-->
-                                         <!--</thead>-->
-                                        <!--<tbody style="text-align: center">-->
-
-                                            <!--{% if contacts.result %}-->
-                                                <!--{% for i in contacts.result %}-->
-
-                                                    <!--<tr class="{% cycle 'odd' 'even' %}">-->
-                                                        <!--<td title="星期几">{{ i.XQJ }}</td>-->
-                                                        <!--<td>{{ i.XH }}</td>-->
-                                                        <!--<td>{{ i.jsmh }}</td>-->
-                                                        <!--<td title="开课时间">第{{ i.DJJ }}节开始</td>-->
-                                                        <!--<td title="课程长度">共{{ i.SKCD }}节课</td>-->
-                                                        <!--<td>{{ i.kcm}}</td>-->
-                                                        <!--<td>{{ i.QSZ }}-{{ i.JSZ }}</td>-->
-                                                    <!--</tr>-->
-
-                                                <!--{% endfor %}-->
-                                           <!--{% endif %}-->
-
-                                        <!--</tbody>-->
-
-                                <!--</table>-->
-                            <!--</div>-->
-                        <!--</div>-->
-                    <!--</div>-->
-                <!--{% endif %}-->
             </div>
             <!--End Advanced Tables-->
         </div>
@@ -227,9 +149,14 @@
             let data_page = $(this).attr('data-page');
             window.location.href = '/table?u={{ u }}&page='+data_page+''
         });
-        function ChangeName(ths) {//改变名称就触发
-            var v = $(ths).val();//得到值
-            $(ths).parent().next().find('input').attr('name',v);//改变属性name的值为v
-        }
+
     </script>
+     <script>
+    $(function(){
+        var length='{{ example_length }}'
+
+        $("#souform").find("option[value = '"+length+"']").attr("selected","selected");
+    })
+    </script>
+
 {% endblock %}

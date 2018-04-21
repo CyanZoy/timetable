@@ -1,3 +1,4 @@
+
 from django.db import models
 
 
@@ -61,4 +62,54 @@ class Js(models.Model):
         verbose_name = '教学场地/教师表'
         verbose_name_plural = '教学场地/教师表'
         db_table = 'DSJ_JW_KB_JXCD_JS'
+        app_label = 'scheduler'
+
+
+class Xs(models.Model):
+    XN = models.CharField('学年', max_length=18)
+    XQ = models.CharField('学期', max_length=40)
+    # JSBH = models.CharField('教室编号', max_length=10)
+    XH = models.CharField('学号', max_length=20)
+    XKKH = models.CharField('选课课号', max_length=100)
+    XQJ = models.CharField('星期几', max_length=40)
+    DJJ = models.IntegerField('第几节')
+    SKCD = models.IntegerField('上课长度', help_text='2表示2节,3表示3节')
+    DSZ = models.CharField('单双周', max_length=6)
+    QSZ = models.IntegerField('起始周')
+    JSZ = models.IntegerField('结束周')
+    KCB = models.CharField('课程表',max_length=200)
+    XKCS = models.CharField(max_length=50)
+    XSF = models.CharField('选上否',max_length=1)
+    GUID = models.CharField(max_length=50, primary_key=True)
+    # JSMC = models.CharField('教室名称', max_length=40)
+    KCZWMC = models.CharField('课程中文名', max_length=460)
+    KCYWMC = models.CharField('课程英文名', max_length=460)
+
+    def __str__(self):
+        return self.XH
+
+    def kcm(self):
+        x=self.KCB
+        b=self.KCB.index('<br>')
+        z=x[:b]
+        return z
+
+    def jsmh(self):
+        x=self.KCB
+
+        xlist=x.split('<br>')
+
+        return xlist[3]
+
+
+
+
+
+
+
+
+    class Meta:
+        verbose_name = '学生课表'
+        verbose_name_plural =verbose_name
+        db_table = 'DSJ_JW_KB_XSKCB'
         app_label = 'scheduler'
