@@ -8,6 +8,7 @@
 
 
 def divice_request_path(request, defaut_div='/'):
+    # try catch
     p = []
     path = request.path
     if path:
