@@ -44,9 +44,9 @@
                     </li>
                     <li>
                         {% if u == '3' %}
-                            <a href="table?u=3" style="color: #F36A5A;">教室</a>{#background: #373d41#}
+                            <a href="table?u=3" style="color: #F36A5A;">教室(未实现)</a>{#background: #373d41#}
                             {% else %}
-                            <a href="table?u=3">教室</a>
+                            <a href="table?u=3">教室(未实现)</a>
                         {% endif %}
                     </li>
                 </ul>
@@ -66,23 +66,23 @@
             <h1 class="page-header">
             <!--总揽 <small>Welcome </small>-->
             </h1>
-            <ol class="breadcrumb">
-                {% if path %}
-                    {% for i, j in path %}
-                          <li><a href="{{ i }}?u=1">{{ j }}</a></li>
-                    {% endfor %}
-                {% endif %}
-                {% if u %}
-                    {% if u == '1' %}
-                    <li class="active">教师</li>
-                    {% elif u == '2' %}
-                    <li class="active">学生</li>
-                    {% elif u == '3' %}
-                    <li class="active">教室</li>
-                {% endif %}
-
-                {% endif %}
-            </ol>
+{#            <ol class="breadcrumb">#}
+{#                {% if path %}#}
+{#                    {% for i, j in path %}#}
+{#                          <li><a href="{{ i }}?u=1">{{ j }}</a></li>#}
+{#                    {% endfor %}#}
+{#                {% endif %}#}
+{#                {% if u %}#}
+{#                    {% if u == '1' %}#}
+{#                    <li class="active">教师</li>#}
+{#                    {% elif u == '2' %}#}
+{#                    <li class="active">学生</li>#}
+{#                    {% elif u == '3' %}#}
+{#                    <li class="active">教室</li>#}
+{#                {% endif %}#}
+{##}
+{#                {% endif %}#}
+{#            </ol>#}
         </div>
         {% block content %}{% endblock %}
     </div>
