@@ -18,9 +18,9 @@
 
                                 <div class="row">
                                     <form method="GET" href='table' id="souform">
-                                    {% if u == '1' %}   <input name="u" value="1" style="display: none"/> {% endif %}
-                                    {% if u == '2' %}   <input name="u" value="2" style="display: none"/> {% endif %}
-                                          <!--{% csrf_token %}-->
+                                    {% if u == '1' %}   <input title="" name="u" value="1" style="display: none"/> {% endif %}
+                                    {% if u == '2' %}   <input title="" name="u" value="2" style="display: none"/> {% endif %}
+
                                     <div class="col-sm-6">
                                     <div class="dataTables_length" id="dataTables-example_length_xs">
 
@@ -33,7 +33,7 @@
                                                 <option value="50">50</option>
                                                 <option value="100">100</option>
                                             </select> </label>
-                                          <input type="submit" value="确定"  ></input>
+                                          <input type="submit" value="确定"  >
 
 
                                     </div>
@@ -44,7 +44,7 @@
                                         <label>搜索:
                                         <input type="search" class="form-control input-sm" aria-controls="dataTables-example" name="s" value="{{ sousuo }}">
                                     </label>
-                                        <input type="submit" value="搜索" ></input>
+                                        <input type="submit" value="搜索" >
 
                                 </div></div>
                                  </form>
