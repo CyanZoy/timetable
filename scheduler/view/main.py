@@ -31,7 +31,7 @@ class ChangeList:
         self.count = self.model.objects.all().count()
         self.args = args
         self.kwargs = kwargs
-        self.key_isnull = self.model.objects.filter(**kwargs).count()
+        self.key_isnull = self.model.objects.filter(*args, **kwargs).count()
 
     def get_results(self):
         result = self.model.objects.all()[:self.list_per_page]
@@ -47,9 +47,15 @@ class ChangeList:
         except DatabaseError as e:
             print(e, '->', 'ChangList.get_results_by_page')
 
-    def get_result_by_range(self, *args):
-        result = self.model.objects.filter(**self.kwargs).order_by(*args)[:self.list_per_page].values()
+    def get_result_by_range(self, *args, **kwargs):
+        """获取指定条数的数据，和传入自定的排序规则"""
+        result = self.model.objects.filter(**kwargs).order_by(*args)[:self.list_per_page]
         return result
+
+    @staticmethod
+    def get_field_count(model, key):
+        """获取某个字段的最值的object"""
+        return model.objects.latest(key)
 
 
 class Pagina:
@@ -60,7 +66,7 @@ class Pagina:
         self.has_previous = False
         self.has_next = False
         self.count = False
-        self.left_page = [1, 2, 3]
+        self.left_page = []
         self.mid_page = []
         self.right_page = []
         self.list_per_page = list_per_page
@@ -77,21 +83,24 @@ class Pagina:
 
         all_page = int(math.ceil(self.count / self.list_per_page))
 
+        if all_page > 3:
+            self.left_page = [1, 2, 3]
+            k = all_page
+            for _ in range(3):
+                self.right_page.append(k)
+                k -= 1
+            if page in [3, 4]:
+                self.mid_page = [i for i in range(1, all_page+1) if i in range(4, 7)]
+            elif page == all_page - 2 and all_page > 4:
+                self.right_page.append(page - 1)
+        else:
+            self.left_page = [i for i in range(1, all_page+1)]
+
         if page > 1:
             self.has_previous = page - 1
 
         if page < all_page:
             self.has_next = page + 1
-
-        k = all_page
-        for _ in range(3):
-            self.right_page.append(k)
-            k -= 1
-
-        if page in [3, 4]:
-            self.mid_page = ['4', '5', '6']
-        elif page == all_page-2:
-            self.right_page.append(page - 1)
 
         elif page not in self.left_page and page not in self.right_page:
             self.mid_page.append(page)
@@ -101,5 +110,5 @@ class Pagina:
                 self.mid_page.append(page + 1)
             elif page - 2 not in self.left_page:
                 self.mid_page.append(page - 2)
-
         return self.s.get_results_by_page(page, *args, **kwargs)
+

@@ -82,7 +82,7 @@
                     <label for="radio-1-0" class="el-radio-button__inner">无(默认)</label>
                 </label>
                 <label role="radio" class="el-radio-button">
-                    <input title="" type="radio" name="radio" id="radio-1-1" class="el-radio-button__orig-radio" value="1,2,3,4,5,6,7,9">
+                    <input title="" type="radio" name="radio" id="radio-1-1" class="el-radio-button__orig-radio" value="1,2,3,4,5,6,7,8,9">
                     <label for="radio-1-1" class="el-radio-button__inner">1-9周</label>
                 </label>
                 <label role="radio" class="el-radio-button">
@@ -148,7 +148,7 @@
                     $('#loader').show();
                     let num = input.val();
                     console.log(num);
-                    search(num, '')
+                    search(num, $('input[type="radio"]:checked').val())
                 }
             }else if (evt.keyCode === 13 && input.is(":focus")){
                 {#不予理睬#}
@@ -175,6 +175,7 @@
             $('#loader').show();
             $.ajax({
                 url: 'specific?num='+num+'&week='+week+'',
+                {#url: 'specific?num='+num+'&week=5',#}
                 type: 'GET',
                 dataType: 'json',
                 success: function(data){
@@ -316,6 +317,8 @@
                 let skcd = data[i].SKCD;
                 let jsmc = data[i].JSMC;
                 let dsz = data[i].DSZ;
+                let class_code = data[i].class_code;
+                console.log('class_code '+class_code);
 
                 let id = we+'_'+sjd + '' + xqj;
                 {#console.log(id);#}
@@ -328,10 +331,17 @@
                     for(let k=2; k<skcd; k++){$('#'+we+ "_" + k + xqj + '').remove();}
                     $('#'+we+ "_" + 1 + '').html(name);
                 }else
-                    for(let k=1; k<skcd; k++){$('#'+we+ "_" + (sjd + k) + xqj + '').remove();}
+                    for(let k=1; k<skcd; k++){$('#'+we+ "_" + (sjd + k) + xqj + '').remove();
+                        {#console.log('移除'+'#'+we+ "_" + (sjd + k) + xqj + '')#}
+                    }
+                if(skcd)
                 obj.attr('rowspan', skcd);
                 obj.css('cursor', 'pointer');
+                {#if(name !== "" || name.length !== 0){#}
+                {#    console.log(name);#}
                 obj.html(name);
+
+                obj.addClass(class_code);
             }
             $('#loader').hide();
             $('.col-md-6:last').show();

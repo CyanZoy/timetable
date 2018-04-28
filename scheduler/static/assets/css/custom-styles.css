@@ -20,9 +20,9 @@ body {
 }
 #page-inner {
     width:100%;
-    margin:10px 20px 10px 0px;
+    margin:0px 20px 10px 0px;
     /*background-color:transparent;*/
-    background-color:rgb(237, 237, 237);
+    /*background-color:rgb(237, 237, 237);*/
     padding: 15px 30px;
     /*min-height:1200px;*/
 }
@@ -94,6 +94,7 @@ position: fixed;
 #page-wrapper {
   position: relative;
   top: 55px;
+  background-image: url("/static/assets/img/white_brick_wall.png");
   box-shadow: 0 0 10px #757575;
   -moz-box-shadow: 0 0 10px #757575;
   -webkit-box-shadow: 0 0 10px #757575;
@@ -148,7 +149,7 @@ border-radius: 0;
 /*----------------------------------------------
    DASHBOARD STYLES    
 ------------------------------------------------*/
-.page-header {margin: 0;border-bottom: 1px solid transparent;text-align: left;background-color: rgb(237, 237, 237);padding: 32px 22px 32px 0;color: #323232;}
+.page-header {margin: 0;border-bottom: 1px solid transparent;text-align: left;/*background-color: rgb(237, 237, 237)*/;padding: 32px 22px 32px 0;color: #323232;}
 @media only screen and (max-width: 770px) {
     .page-header{display: none}
 }
@@ -195,7 +196,7 @@ text-shadow: none;}
   border-top-right-radius: 3px;
 }
 .header {
-    margin: 0 30px;
+    /*margin: 0 30px;*/
 }
 h1.page-header small {
     color: #7E7E7E;
@@ -640,19 +641,19 @@ line-height: 1.428571429;
                padding: 0;
                /*min-height: 1200px;*/
     }
-	
-	
     .navbar-side {
         width: 260px;
         z-index: 1;
     }
-
    .navbar {
  border-radius: 0px; 
 }
    
 }
  @media(max-width:768px) {
+    .navbar-side {
+        width: 100%
+    }
 	#sideNav{
 	display:none;
 } 
@@ -723,13 +724,66 @@ font-size: 19px;
     border:1px solid #9d9d9d;
     /*border-top:1px solid #B5B5B5;*/
 }
-td{
+.row td{
     /*height: 55px;*/
-    max-width: 50px;
+    /*max-width: 50px;*/
+    position: relative;
+    /*padding: 5px 0 0 0 !important;*/
 }
 .info, .danger, .warning, .snow{
     border:1px solid #B5B5B5;
 }
 .table-responsive{
     overflow-x: visible;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button{
+    -webkit-appearance: none !important;
+    -moz-appearance: textfield;
+}
+/*课程类型代码对应样式*/
+.V000::after{
+    /*普通*/
+
+}
+.V001::after{
+    /*换地方*/
+    content: '换地方';
+    color: #fff;
+    background: #00cecc;
+}
+.V002::after{
+    /*停课*/
+    content: '停课';
+    color: #fff;
+    background: rgb(98, 150, 163);
+}
+.V003::after{
+    /*补课*/
+    content: '补课';
+    color: rgb(221, 200, 173);
+    background: rgb(52, 84, 105);
+}
+.V004::after{
+    /*换教师*/
+    content: '换教师';
+    color: #fff;
+    background: #00cecc;
+}
+.V005::after{
+    /*调课*/
+    content: '调课';
+    color: rgb(229, 229, 241);
+    background: rgb(145, 120 ,100);
+}
+.v000, .V002, .V003, .V004, .V005{
+    padding: 18px 0 0 0 !important;
+}
+.v000::after, .V002::after, .V003::after, .V004::after, .V005::after{
+    position: absolute;
+    font-size: 14px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    font-weight: 500;
 }

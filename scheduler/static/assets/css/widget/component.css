@@ -2,7 +2,7 @@
 	position: relative;
 	z-index: 1;
 	display: inline-block;
-	margin: 1em;
+	/*margin: 1em;*/
 	max-width: 370px;
 	width: calc(100% - 2em);
 	vertical-align: top;
@@ -151,6 +151,7 @@
 	height: calc(100% - 1em);
 	text-align: left;
 	pointer-events: none;
+	/*top: -1.3em;*/
 }
 
 .input__label-content--hoshi {

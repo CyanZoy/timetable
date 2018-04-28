@@ -9,7 +9,7 @@
 
                     <div class="panel-heading">
                       {% if u == '1' %}   本周教师课程安排 {% endif %}
-                       {% if u == '1' %}   本周学生课程安排 {% endif %}
+                       {% if u == '2' %}   本周学生课程安排 {% endif %}
 
                     </div>
                     <div class="panel-body">
@@ -20,27 +20,24 @@
                                     <form method="GET" href='table' id="souform">
                                     {% if u == '1' %}   <input title="" name="u" value="1" style="display: none"/> {% endif %}
                                     {% if u == '2' %}   <input title="" name="u" value="2" style="display: none"/> {% endif %}
-
                                     <div class="col-sm-6">
-                                    <div class="dataTables_length" id="dataTables-example_length_xs">
-
+                                    <div class="dataTables_length">
                                         <label>
                                               每页显示:
-                                            <select name="dataTables-example_length" aria-controls="dataTables-example" class="form-control input-sm" value="{{ example_length }}">
-
-                                                <option value="10"  selected="selected">10</option>
-                                                <option value="25">25</option>
-                                                <option value="50">50</option>
-                                                <option value="100">100</option>
-                                            </select> </label>
-                                          <input type="submit" value="确定"  >
-
-
+                                            <select name="display_length" aria-controls="dataTables-example" class="form-control input-sm">
+                                                {% for i in select %}
+                                                    {% ifequal length i %}
+                                                        <option value="{{ i }}"  selected="selected">{{ i }}</option>
+                                                        {% else %}
+                                                        <option value="{{ i }}">{{ i }}</option>
+                                                    {% endifequal %}
+                                                {% endfor %}
+                                            </select>
+                                        </label>
+                                        <input type="submit" value="确定" >
                                     </div>
                                 </div><div class="col-sm-6">
                                 <div id="dataTables-example_filter_xs" class="dataTables_filter">
-
-
                                         <label>搜索:
                                         <input type="search" class="form-control input-sm" aria-controls="dataTables-example" name="s" value="{{ sousuo }}">
                                     </label>
@@ -115,9 +112,9 @@
                 <a class="current" data-page="{{ i }}" href="javascript:void(0)">{{ i }}</a>
             {% endifnotequal %}
         {% endfor %}
-        <span class="more">...</span>
 {#      中间页数显示#}
         {% if mid_page %}
+            <span class="more">...</span>
             {% for i in mid_page %}
                 {% ifnotequal i current_page %}
                     <a class="item" data-page="{{ i }}" href="javascript:void(0)">{{ i }}</a>
@@ -125,9 +122,9 @@
                     <a class="current" data-page="{{ i }}" href="javascript:void(0)">{{ i }}</a>
                 {% endifnotequal %}
             {% endfor %}
-            <span class="more">...</span>
         {% endif %}
-{#      右边页数显示#}
+        {#      右边页数显示#}
+        {% if right_page %}<span class="more">...</span>{% endif %}
         {% for i in right_page %}
             {% ifnotequal i current_page %}
                 <a class="item" data-page="{{ i }}" href="javascript:void(0)">{{ i }}</a>
@@ -147,16 +144,9 @@
     <script>
         $('.pagination a').click(function(){
             let data_page = $(this).attr('data-page');
-            window.location.href = '/table?u={{ u }}&page='+data_page+''
+            let search = $('input[type="search"]').val();
+            window.location.href = '/table?u={{ u }}&page='+data_page+'&s='+search+'';
         });
-
-    </script>
-     <script>
-    $(function(){
-        var length='{{ example_length }}'
-
-        $("#souform").find("option[value = '"+length+"']").attr("selected","selected");
-    })
     </script>
 
 {% endblock %}
