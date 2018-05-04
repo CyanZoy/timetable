@@ -18,11 +18,30 @@
 <nav class="navbar-default navbar-side" role="navigation" style="z-index: 999">
     <div class="sidebar-collapse">
         <ul class="nav" id="main-menu">
+{#            <li>#}
+{#                <a class="{{ dashboard }}" href="index.html"><i class="fa fa-dashboard"></i> 数据统计</a>#}
+{#            </li>#}
+{#            <li>#}
+{#                <a class="{{ search }}" href="specific.html"><i class="fa fa-search"></i> 查询入口</a>#}
+{#            </li>#}
             <li>
-                <a class="{{ dashboard }}" href="index.html"><i class="fa fa-dashboard"></i> 数据统计</a>
-            </li>
-            <li>
-                <a class="{{ search }}" href="specific.html"><i class="fa fa-search"></i> 查询入口</a>
+                <a href="#" class="{{ search }}"><i class="fa fa-sitemap"></i> 查询入口<span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level {{ search_ul }}">
+                    <li>
+                        {% if u == '1' %}
+                            <a href="specific?u=1" style="color: #F36A5A;">教师</a>
+                            {% else %}
+                            <a href="specific?u=1">教师</a>
+                        {% endif %}
+                    </li>
+                    <li>
+                        {% if u == '2' %}
+                            <a href="specific?u=2" style="color: #F36A5A;">学生</a>
+                            {% else %}
+                            <a href="specific?u=2">学生</a>
+                        {% endif %}
+                    </li>
+                </ul>
             </li>
 
             <li>
@@ -60,12 +79,12 @@
 {% endblock %}
 
 {% block wrapper %}
-    <div id="page-wrapper" style="min-height: 100%">
+    <div id="page-wrapper" style="min-height: 100%;">
         <!-- 路径导航 -->
-        <div class="header">
-            <h1 class="page-header">
-            <!--总揽 <small>Welcome </small>-->
-            </h1>
+{#        <div class="header">#}
+{#            <h1 class="page-header">#}
+{#            <!--总揽 <small>Welcome </small>-->#}
+{#            </h1>#}
 {#            <ol class="breadcrumb">#}
 {#                {% if path %}#}
 {#                    {% for i, j in path %}#}
@@ -83,7 +102,9 @@
 {##}
 {#                {% endif %}#}
 {#            </ol>#}
-        </div>
+{#        </div>#}
+{#        <div style="max-width: 1190px;margin: 0 auto;">#}
         {% block content %}{% endblock %}
+{#        </div>#}
     </div>
 {% endblock %}

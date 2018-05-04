@@ -178,3 +178,23 @@ class Tt(models.Model):
 
     def __str__(self):
         return self.YJSZGH+','+self.XJSZGH+','+self.JSLB
+
+
+class JsAccount(models.Model):
+    ACCOUNT = models.CharField(max_length=255, primary_key=True)
+    NAME = models.CharField(max_length=255)
+    EMPLOYEETYPE = models.CharField(max_length=255)
+    SEX = models.CharField(max_length=255)
+    DEPARTMENT = models.CharField(max_length=255)
+    COLLEGENAME = models.CharField(max_length=255)
+    PRONAME = models.CharField(max_length=255)
+    GRADENAME = models.CharField(max_length=255)
+    CLASSNAME = models.CharField(max_length=255)
+    DQZT = models.CharField(max_length=255)
+    SYNCTIME = models.DateField()
+
+    class Meta:
+        verbose_name = '人员信息表'
+        verbose_name_plural = verbose_name
+        app_label = 'scheduler'
+        db_table = 'USERINFO'

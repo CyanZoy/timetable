@@ -21,6 +21,10 @@ class kkh(forms.Form):
     a = forms.CharField()
 
 
+# 存放选课名称大小50
+temporary_class = {}
+
+
 @staff_member_required
 def index(request):
     path_split = divice_request_path(request, defaut_div='/')
@@ -99,15 +103,18 @@ def specific(request):
     user_agent = request.META['HTTP_USER_AGENT']
     extra_context = {}
     if len([k for k in ['iPhone', 'Android'] if k not in user_agent]) == len(['iPhone', 'Android']):
+        extra_context['search_ul'] = 'in'
         extra_context['search'] = 'active-menu'
     path_split = divice_request_path(request, defaut_div='/')
     p = {'index': '首页'}
     for _ in path_split:
         if len(_):
             p[_] = URL_TO_NAME[_]
-
+    u = request.GET.get('u')
+    u = u if u else '1'
     if not request.is_ajax():
         contenxt = {
+            'u': u,
             'path': p.items(),
         }
         contenxt.update(extra_context)
@@ -119,8 +126,16 @@ def specific(request):
         week = request.GET.get('week')
         # 编号
         num = request.GET.get('num')
+        # 若输入的是名字，则取出编号
+        from django.core.exceptions import ObjectDoesNotExist
+        if not num.isdigit():
+            try:
+                num = JsAccount.objects.get(NAME=num).ACCOUNT
+            except ObjectDoesNotExist:
+                pass
         if not num:
             return HttpResponse('false')
+
         lis = defaultdict(list)
         current_week = Rq.objects.get(NYR=DateFormat().current_time_n_y_r()).DJZ
         lis['current_week'] = current_week
@@ -128,6 +143,7 @@ def specific(request):
             week = [w for w in range(current_week, current_week+3) if w <= ChangeList.get_field_count(Rq, 'DJZ').DJZ]
         else:
             week = [int(w) for w in week.split(',')]
+            week = [w for w in range(week[0], week[1]+1)]
         lis['week_info'] = week
 
         # import numpy as np
@@ -139,21 +155,18 @@ def specific(request):
                                    ).order_by('XQJ', 'SJD').values('QSZ', 'JSZ', 'SJD', 'XQJ', 'SKCD', 'DSZ', 'JSMC',
                                                                    'KCZWMC')
         # 以下查询新添课程包括补课，调课，换教师，过滤条件为学年，教师工号或姓名，周次
-        extract = Tt.objects.filter(Q(XQSZ__gte=min(week)) | Q(XJSZ__lte=max(week)), XJSZGH=str(num),
+        extract = Tt.objects.filter(Q(XQSZ__lte=min(week)) | Q(XJSZ__gte=max(week)), XJSZGH=str(num),
                                     XKKH__contains=year_mon,).values()
 
         # 以下查询休课课程，休课课程包括调课，换教师，停课，过滤条件为学年，教师工号或姓名，周次
-        extract_s = Tt.objects.filter(Q(YQSZ__gte=min(week)) | Q(YJSZ__lte=max(week)), YJSZGH=str(num),
+        extract_s = Tt.objects.filter(Q(YQSZ__lte=min(week)) | Q(YJSZ__gte=max(week)), YJSZGH=str(num),
                                       XKKH__contains=year_mon,).values()
+        print(extract)
         # print(extract_s)
         for i in result:
             for w in week:
                 if w in range(i['QSZ'], i['JSZ'] + 1):
                     lis[w].append(i)
-
-        # 存放选课名称大小50
-        from collections import deque
-        temporary_class = {}
 
         # 以下处理课程调换，节假日
         for w in week:
@@ -168,7 +181,7 @@ def specific(request):
                             xkkh = _['XKKH'].split('-')[3]
                             if xkkh not in temporary_class:
                                 a = Js.objects.filter(XKKH__contains=xkkh,
-                                                                          KCZWMC__isnull=False).values('KCZWMC').distinct()
+                                                      KCZWMC__isnull=False).values('KCZWMC').distinct()
                                 if a:
                                     temporary_class[xkkh] = a[0]['KCZWMC']
                             new_class = {'SJD': int(ysjd), 'XQJ': _['XXQJ'],
@@ -193,8 +206,8 @@ def specific(request):
 
         print('处理完成用时', time.time()-start_time)
 
-        # b = json.dumps(lis, default=date_handler, ensure_ascii=False)
-        # print(b)
+        b = json.dumps(lis, default=date_handler, ensure_ascii=False)
+        print(b)
         return HttpResponse(json.dumps(lis, default=date_handler, ensure_ascii=False))
 
 

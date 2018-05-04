@@ -1,0 +1,20 @@
+api使用:
+    http://ip:prot/interfaceName?sign=&appid=&userid=&doorid=&timestamp=
+参数说明:
+    ①.api中参数
+        1.sign
+            sign参数为appid,appsecret,userid,doorid,timestamp进行字典序排序后使用sha1加密
+        2.appid
+            用户身份id
+        3.userid
+            卡号
+        4.doorid
+            门号
+        5.timestamp
+            时间戳,整型
+    ②.私有参数
+        1.appsecret
+            只存在客户端与服务端,不对外公布,不能当参数传递
+服务端验证:
+    服务端首先根据取得的timestamp判断本次接口调用是否无效(有效期为30秒)
+    服务端根据得到的appid获取相应appsecret,将此appsecret与appid,userid,doorid,timestamp根据字典序排序后使用sha1加密后与参数sign进行比较

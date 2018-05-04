@@ -4,4 +4,6 @@ from django.shortcuts import render
 
 
 def api(request):
-    pass
+    appid = request.GET.get('appid')
+    # 根据appid获取appsecret
+
