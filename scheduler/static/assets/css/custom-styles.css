@@ -779,10 +779,16 @@ input[type="number"]::-webkit-inner-spin-button{
     color: rgb(229, 229, 241);
     background: rgb(145, 120 ,100);
 }
-.v000, .V002, .V003, .V004, .V005{
+.V006::after{
+    /*全校调课*/
+    content: '全校调课';
+    color: #fff;
+    background: rgb(98, 150, 160);
+}
+.v000, .V002, .V003, .V004, .V005, .V006{
     padding: 18px 0 0 0 !important;
 }
-.v000::after, .V002::after, .V003::after, .V004::after, .V005::after{
+.v000::after, .V002::after, .V003::after, .V004::after, .V005::after, .V006::after{
     position: absolute;
     font-size: 14px;
     top: 0;

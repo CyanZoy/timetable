@@ -5,60 +5,6 @@
     <link rel="stylesheet" type="text/css" href="/static/assets/css/widget/demo.css" />
     <link rel="stylesheet" type="text/css" href="/static/assets/css/widget/component.css" />
     <style>
-    {#.search_radio{#}
-    {#    margin: 0 auto;#}
-    {#    max-width: 600px;#}
-    {#}#}
-    {#.el-radio-group {#}
-    {#    display: inline-block;#}
-    {#    line-height: 1;#}
-    {#    vertical-align: middle;#}
-    {#    font-size: 0;#}
-    {#}#}
-    {#.el-radio-button, .el-radio-button__inner {#}
-    {#    display: inline-block;#}
-    {#    position: relative;#}
-    {#    outline: 0;#}
-        {#top: 1.1em;#}
-    {#}#}
-    {#.el-radio-button__orig-radio {#}
-    {#    opacity: 0;#}
-    {#    outline: 0;#}
-    {#    position: absolute;#}
-    {#    z-index: -1;#}
-    {#}#}
-    {#.el-radio-button:first-child .el-radio-button__inner {#}
-    {#    border-left: 1px solid #dcdfe6;#}
-        {#border-radius: 4px 0 0 4px;#}
-    {#    -webkit-box-shadow: none!important;#}
-    {#    box-shadow: none!important;#}
-    {#}#}
-    {#.el-radio-button__inner {#}
-    {#    line-height: 1;#}
-    {#    white-space: nowrap;#}
-    {#    background: #fff;#}
-    {#    border: 1px solid #dcdfe6;#}
-    {#    font-weight: 500;#}
-    {#    border-left: 0;#}
-    {#    color: #606266;#}
-    {#    -webkit-appearance: none;#}
-    {#    text-align: center;#}
-    {#    box-sizing: border-box;#}
-    {#    margin: 0;#}
-    {#    cursor: pointer;#}
-    {#    -webkit-transition: all .3s cubic-bezier(.645,.045,.355,1);#}
-    {#    transition: all .3s cubic-bezier(.645,.045,.355,1);#}
-    {#    padding: 12px 20px;#}
-    {#    font-size: 14px;#}
-    {#    border-radius: 0;#}
-    {#}#}
-    {#.el-radio-button__inner, .el-switch__core {#}
-    {#    -webkit-box-sizing: border-box;#}
-    {#    vertical-align: middle;#}
-    {#}#}
-    {#.el-radio-group [type="radio"]:checked + label{#}
-    {#    background: #1ABC9C;#}
-    {#}#}
     td{
     max-width: 45px;
     text-align: center;
@@ -73,7 +19,7 @@
         {#margin-bottom: 5px;#}
         top: 60px;
         z-index: 998;
-        width: 50%;
+        {#width: 50%;#}
         margin: 0 auto 5px auto;
         left: 260px;
     }
@@ -406,7 +352,6 @@
                 let jsmc = data[i].JSMC;
                 let dsz = data[i].DSZ;
                 let class_code = data[i].class_code;
-                console.log('class_code '+class_code);
 
                 let id = we+'_'+sjd + '' + xqj;
                 {#console.log(id);#}
@@ -419,7 +364,8 @@
                     for(let k=2; k<skcd; k++){$('#'+we+ "_" + k + xqj + '').remove();}
                     $('#'+we+ "_" + 1 + '').html(name);
                 }else
-                    for(let k=1; k<skcd; k++){$('#'+we+ "_" + (sjd + k) + xqj + '').remove();
+                    for(let k=1; k<skcd; k++){
+                        $('#'+we+ "_" + (sjd + k) + xqj + '').remove();
                         {#console.log('移除'+'#'+we+ "_" + (sjd + k) + xqj + '')#}
                     }
                 if(skcd)

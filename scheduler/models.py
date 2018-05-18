@@ -1,4 +1,5 @@
 from django.db import models
+from utils.date_format import DateFormat
 
 
 class tes(models.Model):
@@ -198,3 +199,29 @@ class JsAccount(models.Model):
         verbose_name_plural = verbose_name
         app_label = 'scheduler'
         db_table = 'USERINFO'
+
+
+class GlobalKctj(models.Model):
+    """此表为全校性调课，例如节假日统一调课"""
+    Month = [(str(i), str(i)) for i in range(1, 13)]
+    Day = [(str(i), str(i)) for i in range(1, 32)]
+    Sjd_odd = [(str(i), str(i)) for i in range(1, 16, 2)]
+    # Sjd_odd.append(('0', '请选择'))
+    Sjd_even = [(str(i), str(i)) for i in range(2, 16, 2)]
+    # Sjd_even.append(('0', '请选择'))
+
+    ID = models.IntegerField(primary_key=True)
+    XN = models.CharField(max_length=50, verbose_name='学年', default=DateFormat().current_time_to_academic_year())
+    YDATE = models.DateField(verbose_name='原日期')
+    XDATE = models.DateField(verbose_name='新日期')
+    EXCEPTS = models.CharField(max_length=5, verbose_name='除去的课程起始点(请选择)',
+                               choices=sorted(Sjd_odd, key=lambda k: int(k[0])), default='')
+    EXCEPTE = models.CharField(max_length=5, verbose_name='除去的课程结束点(请选择)',
+                               choices=sorted(Sjd_even, key=lambda k: int(k[0])), default='')
+    EXCEPTTYPE = models.CharField(max_length=50, verbose_name='除去课程的类型')
+
+    class Meta:
+        verbose_name = '全局调课'
+        verbose_name_plural = verbose_name
+        app_label = 'scheduler'
+        db_table = 'GLOBAL_SWITCH'

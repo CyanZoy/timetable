@@ -17,6 +17,9 @@ class DateFormat:
     """操纵时间"""
     def __init__(self):
         self.time = time.time()
+        self.t = time.localtime(self.time)
+        self.year = self.t.tm_year
+        self.month = self.t.tm_mon
 
     # @property
     def current_time_n_y_r(self, default_sign='-'):
@@ -27,18 +30,33 @@ class DateFormat:
         """获取当前学年
         @:return Y-Y-N -> 2017-2018-1 -> 学年加学期
         """
-        t = time.localtime(self.time)
-        year = t.tm_year
-        month = t.tm_mon
-        if month in constants.SEMESTER_ONE:
+
+        if self.month in constants.SEMESTER_ONE:
             n = 1
         else:
             n = 2
-        if month in range(9, 13):
+        if self.month in range(9, 13):
             """9-12个月 学年为当前学年 至 学年+1"""
-            return '%s-%s-%s' % (year, year+1, n)
+            return '%s-%s-%s' % (self.year, self.year+1, n)
         else:
-            return '%s-%s-%s' % (year-1, year, n)
+            return '%s-%s-%s' % (self.year-1, self.year, n)
+
+    def current_time_to_academic_xn(self):
+        """根据当前时间返回当前学年"""
+        if self.month in range(9, 13):
+            """9-12个月 学年为当前学年 至 学年+1"""
+            return '%s-%s' % (self.year, self.year + 1)
+        else:
+            return '%s-%s' % (self.year - 1, self.year)
+
+    def current_time_to_academic_xq(self):
+        """根据当前时间返回当前学期"""
+        if self.month in constants.SEMESTER_ONE:
+            return 1
+        return 2
+
+    def current_time_to_sjd(self):
+        """根据当前的时间返回当前时间点，第几周，学年"""
 
 
 if __name__ == "__main__":

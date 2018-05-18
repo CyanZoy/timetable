@@ -91,8 +91,8 @@ from utils.date_format import DateFormat
 # print(rq.NYR, rq['DJZ'])
 # a = Rq.objects.filter(DJZ=5)
 # print(a.latest('-NYR').NYR, a.latest('NYR').NYR)
-import numpy as np
-sign = np.zeros(shape=(12, 8), dtype=bool)
+# import numpy as np
+# sign = np.zeros(shape=(12, 8), dtype=bool)
 """课表总test"""
 w = 8
 #  初始化ChangeList对象
@@ -133,27 +133,38 @@ extract = Tt.objects.filter(Q(XJSZGH=str(2001900030)) | Q(XJSZGH='丛海彬') | 
 # for i in extract_s:
 #     print(i)
 
-from collections import defaultdict
-week = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-num = '1999900171'
-lis = defaultdict(list)
-start_time = time.time()
-# for w in week:
-result = Js.objects.filter(Q(QSZ__lte=min(week)) | Q(JSZ__gte=max(week)),
-    JSZGH=str(num), KCZWMC__isnull=False,
-).order_by('XQJ', 'SJD').values('QSZ', 'JSZ', 'SJD', 'XQJ', 'SKCD', 'DSZ', 'JSMC', 'KCZWMC')
+# from collections import defaultdict
+# week = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+# num = '1999900171'
+# lis = defaultdict(list)
+# start_time = time.time()
+# # for w in week:
+# result = Js.objects.filter(Q(QSZ__lte=min(week)) | Q(JSZ__gte=max(week)),
+#     JSZGH=str(num), KCZWMC__isnull=False,
+# ).order_by('XQJ', 'SJD').values('QSZ', 'JSZ', 'SJD', 'XQJ', 'SKCD', 'DSZ', 'JSMC', 'KCZWMC')
+#
+# for i in result:
+#     for w in week:
+#         if w in range(i['QSZ'], i['JSZ']+1):
+#             lis[w].append(i)
+#
+#
+# b = json.dumps(lis, ensure_ascii=False)
+# print(b)
+#
+# print(time.time() - start_time)
+#
+#
+# liss = [1, 2, 3, 4]
+# print(liss[1::2])
 
-for i in result:
-    for w in week:
-        if w in range(i['QSZ'], i['JSZ']+1):
-            lis[w].append(i)
+# api Test
+# from api.models import *
+# a = Appid.objects.get('kb8947539b9ba847b2')
+# print(a)
 
+Sjd_even = [(str(i), str(i)) for i in range(2, 16, 2)]
+Sjd_even.append(('0', '请选择'))
 
-b = json.dumps(lis, ensure_ascii=False)
-print(b)
-
-print(time.time() - start_time)
-
-
-liss = [1, 2, 3, 4]
-print(liss[1::2])
+a = sorted(Sjd_even, key=lambda k: int(k[0]))
+print(a)

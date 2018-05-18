@@ -36,3 +36,15 @@ class JsAdmin(admin.ModelAdmin):
                     'XKKH', 'JSZGH', 'BZ', 'JSMC', 'UPD', 'KCZWMC', 'KCYWMC')
     exclude = ('GUID',)
 
+
+@admin.register(GlobalKctj)
+class GlobalAdmin(admin.ModelAdmin):
+    list_display = ('XN', 'YDATE', 'XDATE', 'EXCEPTS', 'EXCEPTE', 'EXCEPTTYPE')
+    readonly_fields = ('XN',)
+    fieldsets = (
+        (None, {'fields': (('XN',),)},),
+        (None, {'fields': ('YDATE', 'XDATE',), 'description': format_html("<span style='color:grey'>设置日期</span>")},),
+        (None, {'fields': (('EXCEPTS', 'EXCEPTE', 'EXCEPTTYPE'),), 'description': format_html("<span style='color:grey'>设置需要取消的课程</span>")}),
+    )
+    search_fields = ('XN', 'YDATE', 'XDATE', 'EXCEPTTYPE')
+    list_filter = ('XN', 'EXCEPTTYPE')

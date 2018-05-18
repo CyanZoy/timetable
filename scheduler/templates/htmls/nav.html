@@ -28,17 +28,17 @@
                 <a href="#" class="{{ search }}"><i class="fa fa-sitemap"></i> 查询入口<span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level {{ search_ul }}">
                     <li>
-                        {% if u == '1' %}
-                            <a href="specific?u=1" style="color: #F36A5A;">教师</a>
+                        {% if t == '1' %}
+                            <a href="specific?t=1" style="color: #F36A5A;">教师</a>
                             {% else %}
-                            <a href="specific?u=1">教师</a>
+                            <a href="specific?t=1">教师</a>
                         {% endif %}
                     </li>
                     <li>
-                        {% if u == '2' %}
-                            <a href="specific?u=2" style="color: #F36A5A;">学生</a>
+                        {% if t == '2' %}
+                            <a href="specific?t=2" style="color: #F36A5A;">学生</a>
                             {% else %}
-                            <a href="specific?u=2">学生</a>
+                            <a href="specific?t=2">学生</a>
                         {% endif %}
                     </li>
                 </ul>

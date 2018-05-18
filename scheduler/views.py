@@ -8,13 +8,15 @@ from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import permission_required
 from django import forms
 from django.contrib.admin.views.decorators import staff_member_required
-from scheduler.constants import *
 from utils.request_url import divice_request_path
 from utils.date_format import date_handler, DateFormat
-from scheduler.view.main import ChangeList, Pagina
+from scheduler.view.main import ChangeList, Pagina, FacClass
 import json
 from django.db.models import Q
 from scheduler.constants import *
+from collections import defaultdict
+from django.core.exceptions import ObjectDoesNotExist
+import time
 
 
 class kkh(forms.Form):
@@ -110,24 +112,21 @@ def specific(request):
     for _ in path_split:
         if len(_):
             p[_] = URL_TO_NAME[_]
-    u = request.GET.get('u')
-    u = u if u else '1'
+    t = request.GET.get('t')
+    t = t if t else '1'
     if not request.is_ajax():
         contenxt = {
-            'u': u,
+            't': t,
             'path': p.items(),
         }
         contenxt.update(extra_context)
         return render(request, 'htmls/specific.html', contenxt)
     else:
-        from collections import defaultdict
-        import time
         start_time = time.time()
         week = request.GET.get('week')
         # 编号
         num = request.GET.get('num')
         # 若输入的是名字，则取出编号
-        from django.core.exceptions import ObjectDoesNotExist
         if not num.isdigit():
             try:
                 num = JsAccount.objects.get(NAME=num).ACCOUNT
@@ -135,6 +134,7 @@ def specific(request):
                 pass
         if not num:
             return HttpResponse('false')
+        print(num)
 
         lis = defaultdict(list)
         current_week = Rq.objects.get(NYR=DateFormat().current_time_n_y_r()).DJZ
@@ -146,23 +146,20 @@ def specific(request):
             week = [w for w in range(week[0], week[1]+1)]
         lis['week_info'] = week
 
-        # import numpy as np
-        # sign = np.zeros(shape=(12, 8), dtype=bool)
         # 当前学年
         year_mon = DateFormat().current_time_to_academic_year()
-
-        result = Js.objects.filter(Q(QSZ__lte=min(week)) | Q(JSZ__gte=max(week)), JSZGH=str(num), KCZWMC__isnull=False,
-                                   ).order_by('XQJ', 'SJD').values('QSZ', 'JSZ', 'SJD', 'XQJ', 'SKCD', 'DSZ', 'JSMC',
-                                                                   'KCZWMC')
+        fac = FacClass(num, min(week), max(week))
+        result = fac.js
         # 以下查询新添课程包括补课，调课，换教师，过滤条件为学年，教师工号或姓名，周次
-        extract = Tt.objects.filter(Q(XQSZ__lte=min(week)) | Q(XJSZ__gte=max(week)), XJSZGH=str(num),
-                                    XKKH__contains=year_mon,).values()
-
+        extract = fac.add_class
         # 以下查询休课课程，休课课程包括调课，换教师，停课，过滤条件为学年，教师工号或姓名，周次
-        extract_s = Tt.objects.filter(Q(YQSZ__lte=min(week)) | Q(YJSZ__gte=max(week)), YJSZGH=str(num),
-                                      XKKH__contains=year_mon,).values()
-        print(extract)
-        # print(extract_s)
+        extract_s = fac.stop_class
+        # 获取全局调课
+        extract_global = fac.global_class
+        # print(json.dumps(extract_global, default=date_handler, ensure_ascii=False))
+        # 获取节假日
+        rq = fac.jr_class
+
         for i in result:
             for w in week:
                 if w in range(i['QSZ'], i['JSZ'] + 1):
@@ -198,16 +195,16 @@ def specific(request):
                         lis[w].append(stop_class)
 
             # 处理节假日
-            rq = Rq.objects.filter(DJZ=w, JJMC__isnull=False)
-            if rq:
-                for j in rq:
-                    lis[w].append({'SJD': 1, 'XQJ': j.XQJ, 'SKCD': 13, 'DSZ': '单', 'JSMC': j.JJMC + '',
-                                   'KCZWMC': j.JJMC})
+            for j in rq:
+                if j['DJZ'] == w:
+                    lis[w].append({'SJD': 1, 'XQJ': j['XQJ'], 'SKCD': 13, 'DSZ': '单', 'JSMC': '假期', 'KCZWMC': j['JJMC']})
 
-        print('处理完成用时', time.time()-start_time)
+        for _ in extract_global:
+            for i in extract_global[_]:
+                i['class_code'] = 'V006'
+                lis[_].append(i)
 
-        b = json.dumps(lis, default=date_handler, ensure_ascii=False)
-        print(b)
+        print(json.dumps(lis, default=date_handler, ensure_ascii=False))
         return HttpResponse(json.dumps(lis, default=date_handler, ensure_ascii=False))
 
 
