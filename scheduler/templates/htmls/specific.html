@@ -10,7 +10,7 @@
     text-align: center;
     }
     .search-border{
-        border: 3px solid #f03726;
+        border: 3px solid #948e99;
         border-right: 0;
         height: 40px;
         {#margin-top: 25px;#}
@@ -35,7 +35,7 @@
         position: absolute;
         top: -3px;
         right: 0;
-        background: #f03726;
+        background: #9a8478;
         color: #f5f5f2;
         font-size: 18px;
         outline: none;
@@ -47,10 +47,10 @@
         top: -3px;
         right: 0;
         {#background: #f03726;#}
-        border-left: 3px solid #f03726;
+        border-left: 3px solid #948e99;
         border-right: 0;
-        border-top: 3px solid #f03726;
-        border-bottom: 3px solid #f03726;
+        border-top: 3px solid #948e99;
+        border-bottom: 3px solid #948e99;
         {#padding-left: 0px;#}
         font-size: 14px;
         outline: none;
@@ -92,31 +92,6 @@
 {% endblock %}
 {% block content %}
     <div id="page-inner">
-{#        <div class="search_radio">#}
-{#            <section class="content" style="display: inline-block">#}
-{#                <span class="input input--hoshi" style="top: -1em">#}
-{#                    <input class="input__field input__field--hoshi" type="text" id="input-5" />#}
-{#                    <label class="input__label input__label--hoshi input__label--hoshi-color-2" for="input-5">#}
-{#                        <span class="input__label-content input__label-content--hoshi" id="label">输入你的编号</span>#}
-{#                    </label>#}
-{#                </span>#}
-{#            </section>#}
-{#            <div role="radiogroup" class="el-radio-group">#}
-{#                <label role="radio" class="el-radio-button">#}
-{#                    <input title="" type="radio" name="radio" id="radio-1-0" class="el-radio-button__orig-radio" checked value="">#}
-{#                    <label for="radio-1-0" class="el-radio-button__inner">无(默认)</label>#}
-{#                </label>#}
-{#                <label role="radio" class="el-radio-button">#}
-{#                    <input title="" type="radio" name="radio" id="radio-1-1" class="el-radio-button__orig-radio" value="1,2,3,4,5,6,7,8,9">#}
-{#                    <label for="radio-1-1" class="el-radio-button__inner">1-9周</label>#}
-{#                </label>#}
-{#                <label role="radio" class="el-radio-button">#}
-{#                    <input title="" type="radio" name="radio" id="radio-1-2" tabindex="-1" class="el-radio-button__orig-radio" value="10,11,12,13,14,15,16,17,18">#}
-{#                    <label for="radio-1-2" class="el-radio-button__inner">10-18周</label>#}
-{#                </label>#}
-{#            </div>#}
-{#        </div>#}
-{##}
         <div style="width: 100%; background: black; display: none;" id="loader">
             <div class="loader"></div>
         </div>
@@ -209,7 +184,7 @@
             {# week = '1,2,3,4' #}
             $('#loader').show();
             $.ajax({
-                url: 'specific?num='+num+'&week='+weeks+','+weeke+'',
+                url: 'specific?t={{t}}&num='+num+'&week='+weeks+','+weeke+'',
                 type: 'GET',
                 dataType: 'json',
                 success: function(data){
@@ -378,7 +353,7 @@
             }
             $('#loader').hide();
             $('.col-md-6:last').show();
-            {#回复初始状态#}
+            {#恢复初始状态#}
             flag = true;
             change_label_css(3)
         }
@@ -405,7 +380,6 @@
             a.animate({width:'65px'});
             flag_search = false
         }else if($(window).scrollTop()<500 && !flag_search){
-            console.log("向上滚了");
             a.animate({width:width_search+'px'});
             flag_search = true
         }

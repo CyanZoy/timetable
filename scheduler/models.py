@@ -91,15 +91,16 @@ class Xs(models.Model):
         return self.XH
 
     def kcm(self):
-        x = self.KCB
-        b = self.KCB.index('<br>')
-        z = x[:b]
-        return z
+        if self.KCB:
+            return self.KCB.split('<br>')[0]
+        else:
+            return None
 
     def jsmh(self):
-        x = self.KCB
-        xlist=x.split('<br>')
-        return xlist[3]
+        if self.KCB:
+            return self.KCB.split('<br>')[3]
+        else:
+            return None
 
     class Meta:
         verbose_name = '学生课表'
@@ -110,8 +111,10 @@ class Xs(models.Model):
 
 class Rq(models.Model):
     """节假日表"""
-    XN = models.CharField(max_length=10, verbose_name='学年', null=False)
-    XQ = models.CharField(max_length=2, verbose_name='学期', null=False)
+    jq = [('0', '端午节'), ('1', '清明节'), ('2', '劳动节')]
+
+    XN = models.CharField(max_length=10, verbose_name='学年', null=False, default=DateFormat().current_time_to_academic_xn())
+    XQ = models.CharField(max_length=2, verbose_name='学期', null=False, default=DateFormat().current_time_to_academic_xq())
     N = models.IntegerField(verbose_name='年', null=False)
     Y = models.IntegerField(verbose_name='月', null=False)
     R = models.IntegerField(verbose_name='日', null=False)

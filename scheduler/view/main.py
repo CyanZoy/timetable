@@ -115,17 +115,24 @@ class Pagina:
 
 
 class JsData:
-    def __init__(self, num, name=None):
+    def __init__(self, num, name=None, year=None):
         self.num = num
         self.name = name
+        self.year = year
+        if not self.year:
+            self.year = DateFormat().current_time_to_academic_year()
 
     def select_by_name(self, name):
         """根据姓名查找"""
         pass
 
-    def select_by_number(self, number):
+    def select_by_number(self):
         """根据教师职工号查找"""
         pass
+
+    def select_student_xkkh_by_number(self, xn, xq):
+        """根据学生学号查询课程 过滤条件 学年学期"""
+        return Xs.objects.filter(XH=self.num, XN=xn, XQ=xq)
 
     def select_by_week(self, week):
         """根据周次查询"""
@@ -136,12 +143,24 @@ class JsData:
         return Js.objects.filter(Q(QSZ__lte=djz) | Q(JSZ__gte=djz), JSZGH=self.num, XQJ=xqj, KCZWMC__isnull=False,
                                  XN=year, XQ=xq).distinct().values('QSZ', 'JSZ', 'SJD', 'XQJ', 'SKCD', 'DSZ', 'JSMC', 'KCZWMC')
 
+    def select_student_by_djz_and_xqj(self, djz, xqj, year, xq):
+        """根据学生卡号, 第几周 星期几 学年学期 来查询"""
+        return Xs.objects.filter(Q(QSZ__lte=djz) | Q(JSZ__gte=djz), XH=self.num, XQJ=xqj, XN=year, XQ=xq
+                                 ).distinct().values('QSZ', 'JSZ', 'DJJ', 'XQJ', 'SKCD', 'DSZ', 'KCB')
+
     def select_by_week_range(self, weeks, weeke):
         """根据周次weeks-weeke范围查找"""
-        # 过滤需要加上年份，本次由于数据原因不可加上此条件
+        # 过滤需要加上年份，本次由于数据原因此条件为2017-2018-1
         result = Js.objects.filter(
-            Q(QSZ__gte=weeks) | Q(JSZ__lte=weeke), JSZGH=self.num, KCZWMC__isnull=False,
+            Q(QSZ__gte=weeks) | Q(JSZ__lte=weeke), JSZGH=self.num, KCZWMC__isnull=False, XKKH__contains='2017-2018-1',
         ).order_by('XQJ', 'SJD').values('QSZ', 'JSZ', 'SJD', 'XQJ', 'SKCD', 'DSZ', 'JSMC', 'KCZWMC')
+        return result
+
+    def select_student_by_week_range(self, weeks, weeke, xn, xq):
+        """根据学生学号，周次范围，学年学期"""
+        result = Xs.objects.filter(
+            Q(QSZ__gte=weeks) | Q(JSZ__lte=weeke), XH=self.num, XN=xn, XQ=xq,
+        ).order_by('XQJ', 'DJJ').values('QSZ', 'JSZ', 'DJJ', 'XQJ', 'SKCD', 'DSZ', 'KCB')
         return result
 
 
@@ -186,7 +205,7 @@ class GlobalData:
 
 
 class FacClass:
-    def __init__(self, num, weeks, weeke):
+    def __init__(self, num, weeks, weeke, t):
         self.date = DateFormat()
         self.num = num
         self.weeks = weeks
@@ -195,13 +214,15 @@ class FacClass:
         self.year = self.date.current_time_to_academic_xn()
         self.xq = self.date.current_time_to_academic_xq()
         self.js_obj = JsData(num=self.num)
+        self.t = t
 
     @property
     def js(self):
         return self.js_obj.select_by_week_range(self.weeks, self.weeke)
 
+    @property
     def xs(self):
-        pass
+        return self.js_obj.select_student_by_week_range(weeks=self.weeks, weeke=self.weeke, xn=self.year, xq=self.xq)
 
     @property
     def add_class(self):
@@ -210,8 +231,22 @@ class FacClass:
 
     @property
     def stop_class(self):
-        return TtData.select_by_kwargs(Q(XQSZ__gte=1) | Q(XJSZ__lte=20), XJSZGH=self.num,
+        return TtData.select_by_kwargs(Q(XQSZ__gte=1) | Q(XJSZ__lte=20), YJSZGH=self.num,
                                        XKKH__contains=self.year_mon,)
+
+    @property
+    def xs_extract_class(self):
+        xk = self.js_obj.select_student_xkkh_by_number(xn=self.year, xq=self.xq).values()
+        extract = []
+        for _ in xk:
+            tt = TtData.select_by_kwargs(XKKH=_['XKKH'])
+            if tt:
+                for w in tt:
+                    extract.append(w)
+        return extract
+
+    def xs_add_class(self):
+        pass
 
     @property
     def jr_class(self):
@@ -224,8 +259,12 @@ class FacClass:
         for i in global_class:
             yr = RqData.get_nyr(i['YDATE'])
             xr = RqData.get_nyr(i['XDATE'])
-            b = self.js_obj.select_by_djz_and_xqj(djz=yr.DJZ, xqj=yr.XQJ, year=self.year, xq=self.xq-1)# 这里因为数据问题 -1
-            for i in b:
-                i['XQJ'] = xr.XQJ
-                lis[xr.DJZ].append(i)
+            if self.t == '1':
+                b = self.js_obj.select_by_djz_and_xqj(djz=yr.DJZ, xqj=yr.XQJ, year=self.year, xq=self.xq-1)# 这里因为数据问题-1
+            else:
+                b = self.js_obj.select_student_by_djz_and_xqj(djz=yr.DJZ, xqj=yr.XQJ, year=self.year, xq=self.xq)
+            for j in b:
+                j['XQJ'] = xr.XQJ
+                lis[xr.DJZ].append(j)
         return lis
+

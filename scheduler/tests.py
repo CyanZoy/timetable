@@ -163,8 +163,15 @@ extract = Tt.objects.filter(Q(XJSZGH=str(2001900030)) | Q(XJSZGH='丛海彬') | 
 # a = Appid.objects.get('kb8947539b9ba847b2')
 # print(a)
 
-Sjd_even = [(str(i), str(i)) for i in range(2, 16, 2)]
-Sjd_even.append(('0', '请选择'))
+# Sjd_even = [(str(i), str(i)) for i in range(2, 16, 2)]
+# Sjd_even.append(('0', '请选择'))
+#
+# a = sorted(Sjd_even, key=lambda k: int(k[0]))
+# print(a)
 
-a = sorted(Sjd_even, key=lambda k: int(k[0]))
-print(a)
+xs = Xs.objects.filter(XH='2015010023', XN='2017-2018', XQ='2').values('XKKH')
+# print(xs)
+li = ['(2017-2018-2)-1D16295-2005900080-1', '(2017-2018-2)-1J10665-1999900192-2']
+for w in xs:
+    tk = Tt.objects.filter(XKKH=w['XKKH']).values('BDLB')
+    print(tk)
