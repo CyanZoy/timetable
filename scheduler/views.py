@@ -223,9 +223,8 @@ def specific(request):
         return HttpResponse(json.dumps(lis, default=date_handler, ensure_ascii=False))
 
 
-def student_class(request):
-    if request.is_ajax():
-        pass
+def information(request):
+    pass
 
 
 @permission_required('scheduler.is_teacher', login_url='/login/')

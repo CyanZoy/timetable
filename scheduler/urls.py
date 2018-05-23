@@ -16,4 +16,5 @@ urlpatterns = [
     path('table', views.table),
     re_path('specific', views.specific),
     path('Te', views.Te),
+    path('information', views.information),
 ]
