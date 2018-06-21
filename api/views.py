@@ -2,12 +2,14 @@ from django.shortcuts import HttpResponse
 from api import ierror
 from api.models import Appid
 import time
-from api.util import main
+from api.util.main import *
 import json
+from scheduler.view import main
+from api.view.open import *
 
 
 def api(request):
-    try:
+    # try:
         appid = request.GET.get('appid')
         userid = request.GET.get('userid')
         sign = request.GET.get('sign')
@@ -35,13 +37,14 @@ def api(request):
             return HttpResponse(ierror.WORNG_APPID)
         else:
             sortlist = [client.appsecret, timestamp, doorid, userid, appid]
-            flag = main.equal_sign(sortlist, sign)
+            flag = equal_sign(sortlist, sign)
             if flag:
-                print('验证通过')
+                a = can_open(num=userid, t=1, doorid=doorid)
+                print(a)
                 return HttpResponse('True')
             else:
                 return HttpResponse(ierror.VERIFICATION_NOT_PASS)
-    except Exception as e:
-        print(e)
-        return HttpResponse(ierror.VERIFICATION_NOT_PASS)
+    # except Exception as e:
+    #     print(e)
+    #     return HttpResponse(ierror.VERIFICATION_NOT_PASS)
 

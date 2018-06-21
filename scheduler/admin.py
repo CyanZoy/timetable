@@ -1,8 +1,9 @@
 from django.contrib import admin
 from scheduler.models import *
 from django.utils.html import format_html
-from django.core.paginator import Paginator
 from scheduler.constants import *
+from django.contrib.admin import SimpleListFilter
+
 
 admin.site.site_header = "课表管理"
 admin.site.index_title = "站点管理"
@@ -35,6 +36,7 @@ class JsAdmin(admin.ModelAdmin):
     list_display = ('XN', 'XQ', 'JSBH', 'XQJ', 'SJD', 'DSZ', 'QSZ', 'JSZ', 'SKCD',
                     'XKKH', 'JSZGH', 'BZ', 'JSMC', 'UPD', 'KCZWMC', 'KCYWMC')
     exclude = ('GUID',)
+    search_fields = ('JSZGH', )
 
 
 @admin.register(Rq)
@@ -54,7 +56,6 @@ class RqAdmin(admin.ModelAdmin):
     )
 
 
-
 @admin.register(GlobalKctj)
 class GlobalAdmin(admin.ModelAdmin):
     list_display = ('XN', 'YDATE', 'XDATE', 'EXCEPTS', 'EXCEPTE', 'EXCEPTTYPE')
@@ -62,7 +63,22 @@ class GlobalAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {'fields': (('XN',),)},),
         (None, {'fields': ('YDATE', 'XDATE',), 'description': format_html("<span style='color:grey'>设置日期</span>")},),
-        (None, {'fields': (('EXCEPTS', 'EXCEPTE', 'EXCEPTTYPE'),), 'description': format_html("<span style='color:grey'>设置需要取消的课程</span>")}),
+        (None, {'fields': (('EXCEPTS', 'EXCEPTE'), 'EXCEPTTYPE'), 'description': format_html("<span style='color:grey'>设置需要取消的课程</span>")}),
+
     )
     search_fields = ('XN', 'YDATE', 'XDATE', 'EXCEPTTYPE')
-    list_filter = ('XN', 'EXCEPTTYPE')
+
+    class CountryFilter(SimpleListFilter):
+        title = '课程类型'
+        parameter_name = 'EXCEPTTYPE'
+
+        def lookups(self, request, model_admin):
+            countries = set([c for c in model_admin.model.objects.all()])
+            return [(i, Tesr.objects.get(ID=j.EXCEPTTYPE_id).NAME) for i, j in enumerate(countries)]
+
+        def queryset(self, request, queryset):
+            if self.value():
+                return queryset.filter(EXCEPTTYPE_id=self.value())
+
+    list_filter = ('XN', CountryFilter)
+

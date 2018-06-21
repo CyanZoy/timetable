@@ -12,3 +12,5 @@ headers = {'Cookie': 'JSESSIONID=4C022B73F453DBA10113DD6FF8E04212'}
 r = requests.get(url, headers=headers,params=payload)
 with open('2016012495.jpg', 'wb') as file:
     file.write(r.content)
+
+

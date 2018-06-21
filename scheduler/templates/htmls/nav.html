@@ -80,8 +80,20 @@
 
 {% block wrapper %}
     <div id="page-wrapper" style="min-height: 100%;">
-        <div style="margin: 0 auto;top: 50px;width: 500px; height: 50px;background-color: #0f0f0f">123</div>
-
+    {#提示框#}
+        <div class="md-modal md-effect-1" id="modal-1">
+			<div class="md-content" style="text-align: center;">
+				<h3 id="headline">提示</h3>
+				<div>
+					<p id="content">密码错误:</p>
+					<ul>
+						<li id="account" style="list-style: none;">没有东西.</li>
+					</ul>
+					<button class="md-close">关闭</button>
+				</div>
+			</div>
+		</div>
+{#        <button class="md-trigger" data-modal="modal-1">点击</button>#}
         <!-- 路径导航 -->
 {#        <div class="header">#}
 {#            <h1 class="page-header">#}
@@ -109,4 +121,31 @@
         {% block content %}{% endblock %}
 {#        </div>#}
     </div>
+{% endblock %}
+
+{% block custom_script_nav %}
+    <script>
+        {#$('button.md-trigger').click(function(){#}
+        {#    let a = $('#modal-1');#}
+        {#    if(!a.hasClass('md-show')){#}
+        {#        a.addClass('md-show')#}
+        {#    }#}
+        {#});#}
+        {#$('button.md-close').click(function(){#}
+        {#   $('#modal-1').removeClass('md-show')#}
+        {#});#}
+        function open_close_model(headline, account){
+            let a = $('#modal-1');
+            if(!a.hasClass('md-show')){
+                $('#headline').html(headline);
+                $('#content').html(content);
+                $('#account').html(account);
+                a.addClass('md-show')
+            }else{
+                a.removeClass('md-show')
+            }
+        }
+
+
+    </script>
 {% endblock %}

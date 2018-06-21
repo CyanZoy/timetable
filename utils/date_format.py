@@ -56,7 +56,23 @@ class DateFormat:
         return 2
 
     def current_time_to_sjd(self):
-        """根据当前的时间返回当前时间点，第几周，学年"""
+        """根据当前的时间转换成毫秒后与夏令时或冬令时比较返回当前课程时间点"""
+        # 夏令时
+        summer = {'7:45-9:35': '1', '9:35-12:30': '3', '13:45-15:35': '6', '15:35-17:40': '8', '18:15-19:20': '10'}
+        # 冬令时
+        winner = {'7:45-9:35': '1', '9:35-12:30': '3', '13:15-15:05': '6', '15:05-17:10': '8', '17:45-18:50': '10'}
+        h = self.t.tm_hour
+        m = self.t.tm_min
+        ds = []
+        if self.t.tm_mon in range(5, 10):
+            ds = summer
+        else:
+            ds = winner
+        for a in ds:
+            h_s, _, m_e = a.split(':')
+            m_s, h_e = [int(w) for w in _.split('-')]
+            if h*60*60*1000+m*60*1000 in range(int(h_s)*60*60*1000+m_s*60*1000, h_e*60*60*1000+int(m_e)*60*1000):
+                return ds[a]
 
 
 if __name__ == "__main__":

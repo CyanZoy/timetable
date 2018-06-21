@@ -102,6 +102,11 @@ class Xs(models.Model):
         else:
             return None
 
+    def sjd(self):
+        import re
+        if self.KCB:
+            return re.findall('^第\d+节', self.KCB.split('<br>')[1])
+
     class Meta:
         verbose_name = '学生课表'
         verbose_name_plural = verbose_name
@@ -204,27 +209,63 @@ class JsAccount(models.Model):
         db_table = 'USERINFO'
 
 
+class LessonType(models.Model):
+    """课程与课程类型对应表"""
+    KCDM = models.CharField('课程代码', max_length=10, primary_key=True)
+    KCZWMC = models.CharField('课程中文名称', max_length=230)
+    KCYWMC = models.CharField('课程英文名称', max_length=230)
+    XF = models.CharField('学分', max_length=8)
+    ZXS = models.CharField('周学时/周数', max_length=9)
+    ZS = models.CharField('周数', max_length=5)
+    KCLB = models.CharField('课程类型', max_length=14)
+    UPD = models.DateField('课程类型')
+
+    class Meta:
+        verbose_name = '各类课程信息表'
+        verbose_name_plural = verbose_name
+        app_label = 'scheduler'
+        db_table = 'DSJ_JW_KCDMB'
+
+
+class Tesr(models.Model):
+    ID = models.CharField(max_length=100, primary_key=True)
+    NAME = models.CharField(max_length=50, default='')
+
+    class Meta:
+        verbose_name = '课程类型'
+        verbose_name_plural = verbose_name
+        app_label = 'scheduler'
+        db_table = 'CLASS_TYPE'
+
+    def __str__(self):
+        return self.NAME
+
+
 class GlobalKctj(models.Model):
     """此表为全校性调课，例如节假日统一调课"""
     Month = [(str(i), str(i)) for i in range(1, 13)]
     Day = [(str(i), str(i)) for i in range(1, 32)]
     Sjd_odd = [(str(i), str(i)) for i in range(1, 16, 2)]
-    # Sjd_odd.append(('0', '请选择'))
     Sjd_even = [(str(i), str(i)) for i in range(2, 16, 2)]
-    # Sjd_even.append(('0', '请选择'))
+    Sjd = [(str(i), str(i)) for i in range(1, 16)]
 
     ID = models.IntegerField(primary_key=True)
     XN = models.CharField(max_length=50, verbose_name='学年', default=DateFormat().current_time_to_academic_year())
     YDATE = models.DateField(verbose_name='原日期')
     XDATE = models.DateField(verbose_name='新日期')
     EXCEPTS = models.CharField(max_length=5, verbose_name='除去的课程起始点(请选择)',
-                               choices=sorted(Sjd_odd, key=lambda k: int(k[0])), default='')
+                               choices=sorted(Sjd, key=lambda k: int(k[0])), default='')
     EXCEPTE = models.CharField(max_length=5, verbose_name='除去的课程结束点(请选择)',
-                               choices=sorted(Sjd_even, key=lambda k: int(k[0])), default='')
-    EXCEPTTYPE = models.CharField(max_length=50, verbose_name='除去课程的类型')
+                               choices=sorted(Sjd, key=lambda k: int(k[0])), default='')
+    EXCEPTTYPE = models.ForeignKey(Tesr, on_delete=models.SET('1'), default=None, verbose_name='需除去的课程类型')
+
+    @property
+    def except_type_name(self):
+        return Tesr.objects.get(ID=self.EXCEPTTYPE_id).NAME
 
     class Meta:
         verbose_name = '全局调课'
         verbose_name_plural = verbose_name
         app_label = 'scheduler'
         db_table = 'GLOBAL_SWITCH'
+

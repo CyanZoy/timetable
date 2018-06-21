@@ -43,7 +43,7 @@ class ChangeList:
         self.page = page
         try:
             result = self.model.objects.filter(*args, **kwargs)[(page-1)*self.list_per_page:
-                                                (page-1)*self.list_per_page+self.list_per_page]
+                                                                (page-1)*self.list_per_page+self.list_per_page]
             return result
         except DatabaseError as e:
             print(e, '->', 'ChangList.get_results_by_page')
@@ -146,13 +146,26 @@ class JsData:
     def select_student_by_djz_and_xqj(self, djz, xqj, year, xq):
         """根据学生卡号, 第几周 星期几 学年学期 来查询"""
         return Xs.objects.filter(Q(QSZ__lte=djz) | Q(JSZ__gte=djz), XH=self.num, XQJ=xqj, XN=year, XQ=xq
-                                 ).distinct().values('QSZ', 'JSZ', 'DJJ', 'XQJ', 'SKCD', 'DSZ', 'KCB')
+                                 ).distinct().values('XN', 'XQ', 'XH', 'QSZ', 'JSZ', 'DJJ', 'XQJ', 'SKCD', 'DSZ', 'KCB')
 
-    def select_by_week_range(self, weeks, weeke):
+    def select_student_by_djz_and_xqj_queryset(self, djz, xqj, year, xq):
+        """根据学生卡号, 第几周 星期几 学年学期 来查询"""
+        return Xs.objects.filter(Q(QSZ__lte=djz) | Q(JSZ__gte=djz), XH=self.num, XQJ=xqj, XN=year, XQ=xq
+                                 ).distinct()
+
+    def select_by_week_range(self, weeks, weeke, **kwargs):
         """根据周次weeks-weeke范围查找"""
         # 过滤需要加上年份，本次由于数据原因此条件为2017-2018-1
         result = Js.objects.filter(
-            Q(QSZ__gte=weeks) | Q(JSZ__lte=weeke), JSZGH=self.num, KCZWMC__isnull=False, XKKH__contains='2017-2018-1',
+            Q(QSZ__gte=weeks) | Q(JSZ__lte=weeke), JSZGH=self.num, KCZWMC__isnull=False, XKKH__contains='2017-2018-1', **kwargs
+        ).order_by('XQJ', 'SJD').values('QSZ', 'JSZ', 'SJD', 'XQJ', 'SKCD', 'DSZ', 'JSMC', 'KCZWMC')
+        return result
+
+    def select_by_one_week(self, week, **kwargs):
+        """根据周次查找"""
+        # 过滤需要加上年份，本次由于数据原因此条件为2017-2018-1
+        result = Js.objects.filter(
+            Q(QSZ__lte=week) & Q(JSZ__gte=week), JSZGH=self.num, KCZWMC__isnull=False, XKKH__contains='2017-2018-1', **kwargs
         ).order_by('XQJ', 'SJD').values('QSZ', 'JSZ', 'SJD', 'XQJ', 'SKCD', 'DSZ', 'JSMC', 'KCZWMC')
         return result
 
@@ -192,6 +205,7 @@ class RqData:
 
     @staticmethod
     def get_nyr(date):
+        print('date=111', date)
         return Rq.objects.get(NYR=date)
 
 
@@ -202,6 +216,10 @@ class GlobalData:
     @staticmethod
     def change_class(year):
         return GlobalKctj.objects.filter(XN__contains=year).values()
+
+    @staticmethod
+    def get_global_by_xn(xn):
+        return GlobalKctj.objects.filter(XN=xn)
 
 
 class FacClass:
@@ -219,6 +237,12 @@ class FacClass:
     @property
     def js(self):
         return self.js_obj.select_by_week_range(self.weeks, self.weeke)
+
+    def js_kwargs(self, **kwargs):
+        return self.js_obj.select_by_week_range(self.weeks, self.weeke, **kwargs)
+
+    def js_by_one_week(self, **kwargs):
+        return self.js_obj.select_by_one_week(self.weeks, **kwargs)
 
     @property
     def xs(self):
@@ -249,11 +273,18 @@ class FacClass:
         pass
 
     @property
-    def jr_class(self):
+    def jr_class_week(self):
+        """假日"""
         return RqData.rq(self.weeks, self.weeke)
 
     @property
+    def jr_class_nyr(self):
+        """假日"""
+        return RqData.get_nyr(self.date.current_time_n_y_r())
+
+    @property
     def global_class(self):
+        """生成全局调课中调课的信息"""
         global_class = GlobalData.change_class(self.year_mon)
         lis = defaultdict(list)
         for i in global_class:
@@ -264,7 +295,27 @@ class FacClass:
             else:
                 b = self.js_obj.select_student_by_djz_and_xqj(djz=yr.DJZ, xqj=yr.XQJ, year=self.year, xq=self.xq)
             for j in b:
+                # print('b=', b)
                 j['XQJ'] = xr.XQJ
                 lis[xr.DJZ].append(j)
         return lis
+
+    @property
+    def global_class_stop(self):
+        """生成全局调课中需要停课的数据"""
+        from collections import defaultdict
+        a = GlobalData.get_global_by_xn(self.year_mon)
+        lis = defaultdict(list)
+        for h in a:
+            b = RqData.get_nyr(h.XDATE)
+            c = self.js_obj.select_student_by_djz_and_xqj_queryset(b.DJZ, b.XQJ, b.XN, b.XQ)
+            for i in c:
+                name = i.KCB.split('<br>')[0]
+                d = LessonType.objects.filter(KCZWMC=name).values()
+                for j in d:
+                    if j['KCLB'] == h.except_type_name:
+                        # 课程类型相同，生成停课信息，是否显示停课标签将交由前端判断
+                        stop = {'SJD': h.EXCEPTS, 'XQJ': i.XQJ, 'SKCD': 0, 'class_code': 'V007'}
+                        lis[b.DJZ].append(stop)
+            return lis
 

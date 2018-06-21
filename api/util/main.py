@@ -10,6 +10,7 @@ import hashlib
 
 def equal_sign(sortlist, sign):
     sortlist.sort()
+    print('sortlist2=', sortlist)
     sha = hashlib.sha1()
     sha.update(''.join(sortlist).encode('utf-8'))
     print(sha.hexdigest(), sign)

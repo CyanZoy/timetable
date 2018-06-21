@@ -1,6 +1,6 @@
 # utf-8
 from django.shortcuts import (
-    render, HttpResponse
+    render, HttpResponse, HttpResponseRedirect
 )
 from scheduler.models import *
 import os
@@ -128,13 +128,15 @@ def specific(request):
         # 若输入的是名字，则取出编号,名字可能为学生，教师，教室
         t = request.GET.get('t')
         print('start--', 'and t=', t)
-        if not num.isdigit():
-            try:
-                num = JsAccount.objects.get(NAME=num).ACCOUNT
-            except ObjectDoesNotExist:
-                pass
-        if not num:
-            return HttpResponse('false')
+        try:
+            num_de = JsAccount.objects.get(Q(NAME=num) | Q(ACCOUNT=num))
+            num = num_de.ACCOUNT
+            if t == '1' and num_de.EMPLOYEETYPE == '学生':
+                return HttpResponse(json.dumps({'msg': False, 'headline': '账户错误', 'account': '您查询的用户为学生，请移步学生页面进行查询'}))
+            elif t == '2' and num_de.EMPLOYEETYPE == '教师':
+                return HttpResponse(json.dumps({'msg': False, 'headline': '账户错误', 'account': '您查询的用户为教师，请移步教师页面进行查询'}))
+        except ObjectDoesNotExist:
+            return HttpResponse(json.dumps({'msg': False, 'headline': '账户错误', 'account': '查无此人'}))
         print(num)
 
         lis = defaultdict(list)
@@ -148,6 +150,7 @@ def specific(request):
         lis['week_info'] = week
         fac = FacClass(num, min(week), max(week), t=t)
         result = extract_s = extract = None
+        global_class_stop = fac.global_class_stop
         if t == '1':
             # 获取固定课表
             result = fac.js
@@ -164,9 +167,8 @@ def specific(request):
         extract_global = fac.global_class
         # print(json.dumps(extract_global, default=date_handler, ensure_ascii=False))
         # 获取节假日
-        rq = fac.jr_class
+        rq = fac.jr_class_week
         for i in result:
-            print(i)
             if 'DJJ' in i:
                 i['SJD'] = i.pop('DJJ')
                 i['KCZWMC'] = i['KCB'].split('<br>')[0] if i['KCB'] else ''
@@ -218,6 +220,10 @@ def specific(request):
                     i['SJD'] = i.pop('DJJ')
                     i['KCZWMC'] = i['KCB'].split('<br>')[0] if i['KCB'] else None
                 lis[_].append(i)
+
+        for k, l in global_class_stop.items():
+            for _ in l:
+                lis[k].append(_)
 
         print(json.dumps(lis, default=date_handler, ensure_ascii=False))
         return HttpResponse(json.dumps(lis, default=date_handler, ensure_ascii=False))

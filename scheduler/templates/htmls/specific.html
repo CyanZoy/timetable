@@ -6,8 +6,8 @@
     <link rel="stylesheet" type="text/css" href="/static/assets/css/widget/component.css" />
     <style>
     td{
-    max-width: 45px;
-    text-align: center;
+        max-width: 45px;
+        text-align: center;
     }
     .search-border{
         border: 3px solid #948e99;
@@ -147,39 +147,47 @@
                 if (input.is(":focus")) {
                     {#离焦#}
                     input.blur();
-                    change_label_css(1);
                     {#完成之前禁止再度调用#}
                     flag = false;
-                    $(".row").remove();
                     $('#loader').show();
                     let num = input.val();
                     console.log(num);
-                    search(num, $('#qsz').val(), $('#jsz').val())
+                    if(check_argument_complete()){
+                        $(".row").remove();
+                        search(num, $('#qsz').val(), $('#jsz').val())
+                    }
+                    flag = true
                 }
             }else if (evt.keyCode === 13 && input.is(":focus")){
                 {#不予理睬#}
             }
         };
+
+        function check_argument_complete(){
+            if(!$('#input-5').val()){
+                open_close_model('错误', '请输入需查询的账户名或密码');
+                $('#loader').hide();
+                return false
+            }else if($('#qsz').val() === '-1'){
+                open_close_model('错误', '请选择起始周');
+                $('#loader').hide();
+                return false
+            }else if($('#jsz').val() === '-1'){
+                open_close_model('错误', '请选择结束周');
+                $('#loader').hide();
+                return false
+            }
+            return true
+        }
+
         $('#submit').click(function(){
-            $(".row").remove();
-            search($("#input-5").val(), $('#qsz').val(), $('#jsz').val())
+            if(check_argument_complete()){
+                $(".row").remove();
+                search($("#input-5").val(), $('#qsz').val(), $('#jsz').val())
+            }
         })
     </script>
     <script>
-        $('input[type="radio"]').click(function(){
-            let input = $("#input-5");
-            {#离焦#}
-            if(input.val() === ''){
-                change_label_css(2)
-            }
-            else{
-                change_label_css(1);
-                {#完成之前禁止再度调用#}
-                flag = false;
-                $(".row").remove();
-                search(input.val(), $(this).val())
-            }
-        });
         function search(num, weeks, weeke){
             {# week = '1,2,3,4' #}
             $('#loader').show();
@@ -188,9 +196,11 @@
                 type: 'GET',
                 dataType: 'json',
                 success: function(data){
-                        if(data === false){
-                            change_label_css(2);
+                        if(data.msg === false){
+                            $('#loader').hide();
+                            open_close_model(data.headline, data.account);
                         }
+                        else
                         for(let i=0; i< data.week_info.length; i++){
                             let current_week = data.current_week;
                             let a = data.week_info[i];
@@ -200,13 +210,8 @@
                                 $('#loader').hide();
                                 $('.col-md-6:last').show();
                                 flag = true;
-                                change_label_css(1)
                             }
-
-                            {# {#}
                         }
-
-                    {#console.log(data)#}
                 },
             });
         }
