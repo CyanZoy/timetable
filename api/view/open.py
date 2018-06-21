@@ -23,27 +23,41 @@ def class_constant(lesson, doorid):
     return False
 
 
-def class_makeup(lesson):
+def class_makeup(lesson, doorid):
     """补课"""
+    if lesson:
+        for i in lesson:
+            if we.DJZ in range(int(i['XQSZ']), int(i['XJSZ'])+1) and int(i['XXQJ']) == we.XQJ and i['XSJD'] == sjd and doorid in i['XJSBH']:
+                return True
+        return False
+    else:
+        return False
 
-    pass
 
-
-def class_stop(lesson):
+def class_stop(lesson, doorid):
     """停课"""
     if lesson:
         for i in lesson:
-            print('class_stop=', i)
-            if i['BDLB'] in ['调课', '停课', '换教师', '换地点'] and i['YSJD'] == sjd and i['YXQJ'] == we.XQJ and we.DJZ in range(i['YQSZ'], i['YJSZ']):
+            # 比较时间点,星期,周次(范围内),教室编号(包含)
+            if i['BDLB'] in ['调课', '停课', '换教师', '换地点'] and i['YSJD'] == sjd and i['YXQJ'] == we.XQJ \
+                    and we.DJZ in range(i['YQSZ'], i['YJSZ']) and doorid in i['YJSBH']:
                 return True
+        return False # return False
     else:
         return False
-    pass
 
 
-def class_global(lesson):
+def class_global(lesson, doorid):
     """全校性调课"""
-    pass
+    if lesson:
+        for i in lesson:
+            for j in lesson[i]:
+                print(j)
+                if doorid in j['JSMC'] and j['SJD'] == sjd and j['XQJ'] == we.XQJ and we.DJZ in range(j['QSZ'], j['JSZ'] + 1):
+                    return True
+        return False
+    else:
+        return False
 
 
 def can_open(num, t=1, doorid=None):
@@ -60,7 +74,7 @@ def can_open(num, t=1, doorid=None):
         # 判断是否上课时间
         flag = False
         msg = '非上课时间'
-        # return flag, msg
+        return flag, msg
     fac = FacClass(num, we.DJZ, we.DJZ, t)
     # 查询是否节假日
     jr = fac.jr_class_nyr
@@ -69,46 +83,42 @@ def can_open(num, t=1, doorid=None):
         msg = jr.JJMC
         return flag, msg
     # 查询固定课程
-    js = fac.js_by_one_week(SJD=3, XQJ=we.XQJ)
+    js = fac.js_by_one_week(SJD=3, XQJ=7)
     if class_constant(js, doorid):
         # 是否停课
         tk = fac.stop_class
-        if class_stop(tk):
-            pass
-        # 存在停课 判断是否存在补课
+        if class_stop(tk, doorid=doorid):
+            # 存在停课 判断是否存在补课
             # 存在补课 flag = True
-
-            # 不存在补课 判断是否存在全校性调课
-
-                #存在全校性调课 flag = Y
-
-                #不存在全校性调课 则 flag = N
-
+            additional_class = fac.add_class_by_one_week
+            if class_makeup(additional_class, doorid):
+                flag = True
+            else:
+                # 不存在补课 判断是否存在全校性调课
+                    global_class = fac.global_class
+                    if class_global(global_class):
+                        # 存在全校性调课 flag = Y
+                        flag = True
+                    else:
+                        flag = False
+                        # 不存在全校性调课 则 flag = N
         else:
+            # 不存在停课 则 flag = True
             flag = True
-        # 不存在停课 则 flag = True
-
-        pass
-
     else:
         # 不存在固定课程 -> 判断是否存在补课
-            # 存在补课flag = Y
-
-            # 不存在补课
-                # 存在全校性调课
-
-                # 不存在全校性调课
-        pass
-
-
-    # for i in tk:
-    #     # print(i)
-    #     if i['BDLB'] in ['调课', '停课', '换教师', '换地点']:
-    #         if i['YSJD'] == sjd:
-    #             msg = i['BDLB'] + '原'
-    #             flag = False
-
-
+        additional_class = fac.add_class_by_one_week
+        if class_makeup(additional_class, doorid):
+            flag = True
+        else:
+            # 不存在补课 判断是否存在全校性调课
+            global_class = fac.global_class
+            if class_global(global_class, doorid):
+                # 存在全校性调课 flag = Y
+                flag = True
+            else:
+                flag = False
+                # 不存在全校性调课 则 flag = N
     return flag, msg
 
 
